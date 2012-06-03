@@ -1,0 +1,38 @@
+\chapter{Implementation and testing}\label{impltest}
+
+\section{Details of realised tests}
+
+The scaliness of implemented algorithms were tested on chosen files from Calgary and Canterbury corpus too. The framework to scale the files is different of the testing one. Each file is equally split to 1~000 parts (files with number of lines less than 1~000 are split to 100 parts) by number of lines---the $n$ th part consists of $\frac{n}{1000}$ ($\frac{n}{100}$) lines. Each test runs only 100--10 times (depending up the $n$---the size of compressed data) because of time complexity. This cycle runs 10--100 times (10 was chosen for this tests) and the minimum time is taken. The file splitting by the number of lines was chosen because of the character of algorithms (word-based)---the splitting by the block of the same size is not so predicative.
+
+There are parameters of the computer used for tests shown in Table \ref{tab:PCparam}.
+\begin{table}\centering
+	\caption{Testing computer parameters}
+	\label{tab:PCparam}
+	\begin{tabular}{|l|r|}
+	\hline \multicolumn{1}{|c|}{\textbf{Part}} & \multicolumn{1}{|c|}{\textbf{Description}} \\\hline
+	CPU & 2.2 GHz AMD Athlon(tm) 64 Processor 3200+\\
+	MEM & 2.5 GB\\
+	OS & x86\_64 GNU/Linux Fedora release 7 (Moonshine)\\\hline
+	\end{tabular}
+\end{table}
+
+\section{Integers distribution and encoding}\label{sec:distr}
+
+The integers encoding of indexes of phrases from the word (non-word) dictionary is possible cause of the only average results of compression ratio of implemented algorithms. The decision is to get the distribution of indexes during the encoding process (and decoding process too). The length of indexes located in shown graphs is only hypothetical---the binary code with minimal length.
+
+The graphs of index distribution also shows the differencies between the algorithms with sorted dictionaries (\textit{WLZWS} and \textit{WLZWES}) and the algorithms with unsorted dictionaries (\textit{WLZW} and \textit{WLZWE}). The most frequently used phrases are moved to the front of dictionary in algorithms with sorted dictionary so they get lower indexes. This feature is demonstrated by the growth of number of indexes at the beginning of the distribution. The compression process of algorithms with sorted dictionaries becomes more efficient when the code with variable length of code words (Fibonacci code) is used but the compression efficiency is supposed to be the same at the transition from the \textit{WLZWE2} algorithm to the \textit{WLZWES2} algorithm---the encoding by block code. 
+
+\begin{conclusion}
+	The word-based dictionary data compression algorithms (a part of lossless data compression) are the subject of this thesis. The lossless data compression is a very important field of research because the data compression allows to reduce the amount of space needed to store data.
+
+	The background of a data compression field was presented in Chapter~\ref{textcompr}. There are basic notions and definitions followed by the description of character-based dictionary algorithms. The word-based dictionary compression methods were investigated and discussed at the end of this chapter too.
+
+	There is the investigation of index distribution of tested files in Section \ref{sec:distr}. It led to the new modification of semi-adaptive word-based \gls{LZW} algorithm---\textit{WLZWE2}. The compression efficiency of this algorithm applied to the large files is better than the other implemented algorithms. However, the compression efficiency of \textit{WLZWE2} algorithm is much worse when it is applied to the small files. The experiments with \textit{WLZWE2} and \textit{WLZWES2} algorithms confirm the assumption from Section \ref{sec:distr}---the compression efficiency of version with unsorted dictionaries (\textit{WLZWE2}) is analogous to version with sorted ones (\textit{WLZWES2}).
+
+	The testing of memory used during compression and/or decompression process is one of the possibilities of further research. The experiments with files of greater size or multilingual files could be also good opportunity to gain new improvements of algorithms. The static part of dictionaries could improve the compression efficiency too.
+
+	The implemented methods achieve fairly good compression ratio (25--30$\%$ at large files) with acceptable compression and decompression time. There are possibilities of further improvements especially at semi-adaptive methods. However, the gain of these improvements is not good enough to top the compression efficiency of other lossless data compression methods (context methods from PPM family). The results of implemented algorithms were not as good as it was expected but the work on this thesis showed new ways of possible further research---word-based version of grammar-based compression algorithms and another possibilities in the field of word-based context methods of data compression.
+
+	The Gnuplot 4.2 utility was very useful for generation of graphs in this thesis. There was the drawing editor Ipe 6.0 used for figures creation.
+	\nocite{Po01}
+\end{conclusion}

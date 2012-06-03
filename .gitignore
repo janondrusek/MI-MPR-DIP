@@ -1,0 +1,10 @@
+.project
+.settings
+.texlipse
+tmp
+*.acn
+*.glo
+*.ist
+*.synctex.gz
+.tex
+DP_Ondrusek_Jan_2012.pdf

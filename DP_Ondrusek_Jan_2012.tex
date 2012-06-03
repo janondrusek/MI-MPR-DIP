@@ -1,0 +1,62 @@
+% options:
+% thesis=B bachelor's thesis
+% thesis=M master's thesis
+% czech thesis in Czech language
+% english thesis in English language
+
+\documentclass[thesis=M,english]{FITthesis}[2011/07/15]
+
+\usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
+
+\usepackage{graphicx} %graphics files inclusion
+% \usepackage{subfig} %subfigures
+% \usepackage{amsmath} %advanced maths
+% \usepackage{amssymb} %additional math symbols
+
+% list of acronyms
+\usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
+\iflanguage{czech}{\renewcommand*{\acronymname}{Seznam pou{\v z}it{\' y}ch zkratek}}{}
+\makeglossaries
+
+\newcommand{\tg}{\mathop{\mathrm{tg}}} %cesky tangens
+\newcommand{\cotg}{\mathop{\mathrm{cotg}}} %cesky cotangens
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\department{Department of theoretical computer science}
+\title{Admission procedure \\ \hspace*{3.6mm} Automatic processing of applications\\ \hspace*{3.6mm} for master's
+study program} \author{Ján Ondrušek} %author's name without academic degrees
+\authorWithDegrees{Bc. Ján Ondrušek} %author's name with academic degrees
+\supervisor{Ing. Tomáš Kadlec}
+\acknowledgements{I would like to thank my family and friends for support during writing this thesis.}
+\abstractCS{Primárnym cieľom tejto diplomovej práce je analyzovať Řád přijímacího řízení ČVUT a Směrnici děkana pro
+přijímací řízení na ČVUT Fakultě informačních technologií. Implementovať RESTful API, ktoré vystaví funkcionalitu
+backendu pre prijímací proces s použitím Business Process Management stroja.} 
+\abstractEN{Primary aim of this thesis is to analyse Conditions for admission and Dean's directive for admission process
+to master's study programme at CTU FIT. Implement RESTful API, which exposes backend functionality for admission
+processing using Business Process Management.}
+\placeForDeclarationOfAuthenticity{Prague}
+%where you have signed the declaration
+\keywordsCS{Spracovanie prihlášok, RESTful API, BPM, jBPM, Spring, Spring Roo}
+\keywordsEN{Admission procedure, RESTful API, BPM, jBPM, Spring, Spring Roo}
+
+\begin{document}
+
+\newacronym{LZW}{LZW}{Lempel Ziv Welch}
+\newacronym{RLE}{RLE}{Run-Length Encoding}
+
+\include{chapters/chapter_01}
+\include{chapters/chapter_02}
+\include{chapters/chapter_03}
+
+\bibliographystyle{iso690.bst}
+\bibliography{ref}
+
+\appendix
+
+\printglossaries
+
+\include{appendices/appendix_01}
+
+
+\end{document}
