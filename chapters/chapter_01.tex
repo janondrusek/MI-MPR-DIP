@@ -1,16 +1,30 @@
 \begin{introduction}
 	\section{Motivation and objectives}
 
-	The amount of information is rapidly growing up. The main technique of reducing loads of space needed to store data or reducing time needed to transmit data is data compression. The size of data reduction is achieved by removing the excessive information.
-	The efficiency of data compression algorithms can be compared by compression ratio, time of compression and/or decompression and size of used memory. Each of these consequences unfortunately mutually interacts.
-	The data compression algorithms can be divided by many factors, for example by the information loss: lossless compression algorithms and lossy ones. Lossless means that the compression processes is fully reversible and decompressed data is identical to the original data. These algorithms are best suited for documents, programs and other data where loss is unacceptable. Lossy algorithms irreversibly remove some parts of data and only an approximation of the original data can be reconstructed. These algorithms achieve better compression efficiency than lossless algorithms, but compression is limited to branches where some loss is acceptable (audio, video, images etc.).
-	This thesis focuses on lossless algorithms especially the dictionary ones, which are established on likenesses of compressed, mostly textual, data, and their properties.
-
-	\section{Problem statements}
-
-	The main sight of the thesis is a part of textual algorithms named word-based which deals with texts in languages (natural, formal etc.). All of texts in natural languages (and also in other languages) have a specific structure. They can be divided into sentences, which can finish by a period, a question mark, or an exclamation mark. Each sentence consists of words that are separated from each other by space and/or punctuation marks.
-	Word-based compression algorithms, where alphabet consists of words, take advantage of these strictly defined structures, repetitions of sequences of words and spaces, repetitions of whole sentences.
-	\section{State of the Art}
-
-	There are two basic ways in the world of dictionary word-based algorithms. The both of them are based on dictionary method \gls{LZW}. The method Word-Based \gls{LZW}, independently presented by Horspool and Cormack \cite{HC92}, and Jiang and Jones \cite{JJ92} in 1992 as first, is adaptive version of mentioned algorithm. The main sight is recently concentred to word-based context methods of data compression and related word-based \textit{preprocessing} transformations, which reversibly transform a data into another form. The reverse process is called \textit{postprocessing} transformation. Affected data could be compressed with most of existing lossless data compression algorithms with better compression efficiency than it can be achieved using an unaltered data. 
+	Every year hundreds of students apply for studies at Czech Technical University, Faculty of informatics. This
+	raises certain requirements including managing, storing, analysing and processing of all these applications.
+	Each application has its own life cycle, which begins with filling out an on-line form and continues through various
+	steps which an applicant has to pass. The life cycle ends when a decision of acceptance is delivered to the applicant
+	and he either enrolls in the studies or not.
+	
+	Currently all applications are processed rather manually. Many man days of administrative work are consumed during the
+	process. Although an electronic form is filled in and submitted by an applicant, the rest of actions almost exclusively
+	fall into the hands of Study Department staff. The question is: Why?
+	
+	We live in the world of new era of the Internet. Everything goes on-line, web and the latest trend - everything goes
+	mobile. People want things to happen very quickly. They want to access all the information fast, now.
+	
+	Students and applicants are no different. They expect from this prestigious University, especially from Faculty of
+	informatics, most modern and useful gadgets when it comes to software and web.
+	
+	\section{Let's make things better}
+	
+	Taking the above written into account, this might be a good idea for a master's or bachelor's thesis. However if we
+	want to use all available technologies that have become popular in past years and to automatize majority of admission
+	processing, it becomes a very complex project. So why not to build several teams and split it into multiple, both
+	bachelor's and master's, thesis?
+	
+	This is how project Přiríz was born. It includes web interface for both students and Study Department staff, native
+	Android application and RESTful API with BPM processing machine, which is a subject of my master's thesis.
+	 
 \end{introduction}

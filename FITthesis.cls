@@ -64,7 +64,7 @@
 
 \newenvironment{introduction}{
 	\setsecnumdepth{part}
-	\iflanguage{czech}{\chapter{{\' U}vod}}{\chapter{Introduction}}
+	\iflanguage{czech}{\chapter{{\' U}vod}}{\chapter{Prologue}}
 }{
 	\setsecnumdepth{all}
 }
