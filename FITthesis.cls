@@ -166,7 +166,7 @@
 				\else
 					\ClassError{FITthesis}{Department unspecified}{Specify the department using the \department command.}
 				\fi
-			} & \hfill\includegraphics[width=3cm]{cvut-logo-bw}
+			} & \hfill\includegraphics[width=3cm]{figures/cvut-logo-bw}
 		\end{tabular}
 
 		\vfill
