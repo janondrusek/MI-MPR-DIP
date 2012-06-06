@@ -256,8 +256,10 @@
 		\noindent \textit{This thesis is a school work as defined by Copyright Act of the Czech Republic. It has been submitted at Czech Technical University in Prague, Faculty of Information Technology. The thesis is protected by the Copyright Act and its usage without author's permission is prohibited (with exceptions defined by the Copyright Act).}
 	}
 	
-	\iflanguage{czech}{\subsection{Odkaz na tuto pr{\' a}ci} \theauthor{}. \textit{\thetitle{}: \thesistype{}}. Praha: {\v C}VUT v~Praze, Fakulta informa{\v c}n{\' i}ch technologi{\' i}, \the\year.}{\subsection{Citation of this thesis} \theauthor{}. \textit{\thetitle{}: \thesistype{}}. Czech Republic: Czech Technical University in Prague, Faculty of Information Technology, \the\year.} 
-}
+	\iflanguage{czech}{\subsection{Odkaz na tuto pr{\' a}ci} \theauthor{}. \textit{\thetitle{}: \thesistype{}}. Praha:
+	{\v C}VUT v~Praze, Fakulta informa{\v c}n{\' i}ch technologi{\' i}, \the\year.}{\subsection{Citation of this thesis}
+	\theauthor{}. \textit{\rawtitle{}: \thesistype{}}. Czech Republic: Czech Technical University in Prague, Faculty of
+	Information Technology, \the\year.} }
 
 \DeclareRobustCommand{\abstractpage}{
 	\chapter*{Abstract}
