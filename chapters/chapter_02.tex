@@ -27,14 +27,13 @@
 	
 	\begin{itemize}
 	  \item Addressable resources 
-	  	The key abstraction of information and data in REST is a resource, and each re-
-		source must be addressable via a \gls{URI}.
+	  	The key abstraction of information and data in REST is a resource, and each resource must be addressable via a
+	  	\gls{URI}.
 		A uniform, constrained interface
 		Use a small set of well-defined methods to manipulate your resources.
 		\item Representation-oriented 
-		You interact with services using representations of that service. A resource refer-
-		enced by one URI can have different formats. Different platforms need different
-		formats. For example, browsers need HTML, JavaScript needs JSON (JavaScript
+		You interact with services using representations of that service. A resource referenced by one URI can have different
+		formats. Different platforms need different formats. For example, browsers need HTML, JavaScript needs JSON (JavaScript
 		Object Notation), and a Java application may need XML.
 		\item Communicate statelessly
 		Stateless applications are easier to scale.
@@ -109,11 +108,60 @@
 	  \item \textbf{Accept-Language:} sk-sk,en;q=0.5
 	\end{itemize}
 	
-	Also the request does not contain any request body, as it is GETting information from the server. The response of the
-	message received is 200, which means OK - success. An overview of all available HTTP response codes can be found
-	on-line at \cite{httpcodes}.
+	Also the request does not contain any request body, as it is GETting information from the server. 
 	
-	RESTful web service needs more than that and luckily \gls{HTTP} offers much more.
+	The response of the message received is 200, which means OK - success. An overview of all available HTTP response codes
+	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message tells us, that the body
+	received it of type HTML.
+	
+	RESTful web service needs more than that and luckily \gls{HTTP} offers much more. It will be better to point out its
+	features in a relationship to each of REST's architectural principles.
+	
+	\subsection{Addressable resources, URIs and links}
+	
+	Each \textbf{resource} in a system should be reachable through a \textbf{unique identifier}. When reflected to the idea
+	of REST and HTTP, URIs will automatically come to mind. The format of a URI looks like this \cite{uri}:
+	
+	\begin{verbatim}
+	<scheme>://<authority><path>?<query>
+	\end{verbatim}
+	
+	The above is a citation directly from RFC, but for purposes of this master's thesis should be rewritten into more
+	detailed form:
+	
+	\begin{verbatim}
+	<scheme>://<host>:<port>/<path>?<queryString>#<fragment>
+	\end{verbatim}
+	
+	Where in the RESTful world these parts usually mean:
+	\begin{itemize}
+	  \item \textbf{scheme} typically \textbf{http} or \textbf{https}
+	  \item \textbf{host} aka server name, e.g. \textbf{fit.cvut.cz} and \textbf{port}
+	  \item \textbf{path} to the resource on server, e.g. \textbf{/admission/123-456-01}
+	  \item \textbf{queryString} after the \textbf{?} is typically used for a set of resources and can be a page number,
+	  number of items in the set, or a filter definition and many more, e.g. \textbf{?page=1\&limit=10}
+	  \item \textbf{fragment} after the \textbf{\#} usually points to a certain place in a document
+	\end{itemize}
+	
+	An example of such URI pointing to a set of resources may be:
+	
+	\begin{verbatim}
+	http://pririz.is.fit.cvut.cz:9090/admission/services/admission
+		?page=2&count=20
+	\end{verbatim}
+	 
+	An example of URI pointing to a concrete single resource:
+	
+	\begin{verbatim}
+	http://pririz.is.fit.cvut.cz:9090/admission/services/admission
+	/123-456-01
+	\end{verbatim}
+	
+	\subsection{A uniform, constrained interface, HTTP methods}
+
+	\subsection{Communicate statelessly, (no)sessions}
+	
+	\subsection{HATEOAS}
 	
 	\section{Why not SOAP?}
 	
