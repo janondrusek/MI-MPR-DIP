@@ -14,10 +14,14 @@
 
 	\section{Talking about REST, what is it?}
 	
-	\gls{REST} or RESTful programming is no official standard and there are no official guidelines or rules for it. So what
-	is it then? It is and architectural and programming style for Web. Lots of text has been written about it during past
-	years and describing the whole idea of REST is out of scope of this master's thesis. I can however try to point out the
-	most significant, important and basically, what I personally managed to adopt.
+	\gls{REST} or RESTful programming is not defined by any official standard and there are no official guidelines or rules
+	for it.
+	So what is it then? It is and architectural and programming style for Web, where a set of constraints is defined. Lots
+	of text has been written about it during past years and describing the whole idea of REST is out of scope of this
+	master's thesis. I can however try to point out the most significant, important and basically, what I personally
+	managed to adopt.
+	
+	\subsection{Main principles of REST, RESTful web service}
 	
 	There are several architectural principles, that one should keep in mind when thinking of REST \cite[p.~3]{restful}:
 	
@@ -41,7 +45,75 @@
 	\gls{HATEOAS} is often understood as a core principle of \gls{REST}. It carries an idea of resource representation via
 	links and stateless implementation of services.
 	
+	RESTful web services are the result of applying these constraints to services that utilize web standards such as
+	\gls{URI}s, \gls{HTTP}, \gls{XML}, and \gls{JSON}.
+	
 	\subsection{Back to the roots, HTTP is reborn}
+	
+	\gls{SOA} has been in this world for a long time. Many different approaches and technologies exist to implement it.
+	From those worth to mention: DCE, CORBA, Java RMI, \ldots They offer robust standards, one can build large, complex
+	and scalable systems on top of it, but there is a cost. They often bring huge complexity and maintenance requirements
+	into place.
+	
+	Currently, when one says \gls{SOA}, it often evokes \gls{SOAP} in a mind, that spent several years using technologies
+	mentioned above. This however is not a bad thing. \gls{SOAP} is used very widely and is perfectly suitable for
+	developing services and \gls{API}s. But it is definitely not a lightweight technology and it is not ideal for
+	everything. Its most common use case is for server-server communication in enterprise systems.
+	
+	Nowadays, we need something quickly adoptable, widely spreadable, platform and technology independent and client
+	oriented. This needs a completely different approach and new way of thinking when it comes to \gls{SOA}. It is about
+	Web, so why not to start with something that is Web, as we see it today, based on? Yes, it is \gls{HTTP}.
+	
+	Although \gls{REST} is not protocol specific, when saying \gls{REST} it usually automatically means \gls{REST} +
+	\gls{HTTP}. No wonder. \gls{HTTP} is perfectly suitable for client-server \gls{SOA}, it is just about the way of
+	thinking. It offers transport layer, request-response mechanism, descriptive responses, caching mechanism and many
+	more. It is true, that in past years, when various types of web applications started to appear, many web developers
+	limited their thinking and use of \gls{HTTP} to two basic cases:
+	
+	\begin{itemize}
+	  \item GET a page with \gls{URI}, perhaps containing a few query parameters
+	  \item POST a form
+	\end{itemize}
+	
+	\begin{program}
+	\caption{HTTP GET request/response example of a standard web page}\label{http_get_web}
+	\begin{verbatim}
+	GET /index.html HTTP/1.1
+	User-Agent: curl/7.24.0 (i686-pc-cygwin) ...
+	Host: www.google.sk
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	Accept-Language: sk-sk,en;q=0.5
+
+	HTTP/1.1 200 OK
+	Date: Thu, 07 Jun 2012 11:25:15 GMT
+	Expires: -1
+	Cache-Control: private, max-age=0
+	Content-Type: text/html; charset=ISO-8859-2
+	Set-Cookie: ... expires= ...; path=/; domain=.google.sk
+	Set-Cookie: ... expires= ...; path=/; domain=.google.sk; HttpOnly
+	Server: gws
+	X-XSS-Protection: 1; mode=block
+	X-Frame-Options: SAMEORIGIN
+	Transfer-Encoding: chunked
+
+	<!doctype html><html ...><head> ... <body> ...
+	\end{verbatim}
+	\end{program}
+	
+	The example above \ref{http_get_web} shows most common HTTP request and response, when browsing the web via standard
+	web browser. It requests object \textbf{/index.html} using \textbf{GET} method placed on host \textbf{www.google.sk}.
+	My client also put several HTTP headers into the request:
+	
+	\begin{itemize}
+	  \item \textbf{Accept:} text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	  \item \textbf{Accept-Language:} sk-sk,en;q=0.5
+	\end{itemize}
+	
+	Also the request does not contain any request body, as it is GETting information from the server. The response of the
+	message received is 200, which means OK - success. An overview of all available HTTP response codes can be found
+	on-line at \cite{httpcodes}.
+	
+	RESTful web service needs more than that and luckily \gls{HTTP} offers much more.
 	
 	\section{Why not SOAP?}
 	

@@ -5,6 +5,7 @@
 % english thesis in English language
 
 \documentclass[thesis=M,english]{FITthesis}[2011/07/15]
+\bibliographystyle{iso690}
 
 \usepackage[utf8]{inputenc} % LaTeX source encoded as UTF-8
 
@@ -12,6 +13,16 @@
 % \usepackage{subfig} %subfigures
 % \usepackage{amsmath} %advanced maths
 % \usepackage{amssymb} %additional math symbols
+
+% source code
+\usepackage{float}
+
+% BibTeX
+\usepackage{url}
+ 
+\floatstyle{ruled}
+\newfloat{program}{thp}{lop}
+\floatname{program}{Code}
 
 % list of acronyms
 \usepackage[acronym,nonumberlist,toc,numberedsection=autolabel]{glossaries}
@@ -45,16 +56,20 @@ processing using Business Process Management.}
 \newacronym{API}{API}{Application Programming Interface}
 \newacronym{BPM}{BPM}{Business process management}
 \newacronym{HATEOAS}{HATEOAS}{Hypermedia As The Engine Of Application State}
+\newacronym{HTTP}{HTTP}{Hypertext Transfer Protocol}
+\newacronym{JSON}{JSON}{JavaScript Object Notation}
 \newacronym{REST}{REST}{REpresentational State Transfer}
 \newacronym{RESTful}{RESTful}{With application of REST principles}
+\newacronym{SOA}{SOA}{Service-oriented architecture}
+\newacronym{SOAP}{SOAP}{Simple Object Access Protocol}
 \newacronym{URI}{URI}{Uniform Resource Identifier}
+\newacronym{XML}{XML}{Extensible Markup Language}
 
 \include{chapters/chapter_01}
 \include{chapters/chapter_02}
 \include{chapters/chapter_03}
 \include{chapters/chapter_04}
 
-\bibliographystyle{iso690.bst}
 \bibliography{mybibliographyfile}
 
 \appendix
