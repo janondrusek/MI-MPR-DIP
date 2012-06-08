@@ -7,7 +7,7 @@
 	Other example may be growing amount of \verb|mashups|\footnote{Applications that are created via
 	combination of multiple different services. Such application, almost exclusively web based, can be created very quickly
 	by consuming several \gls{API}s. Not necessarily from the same provider.} and uncountable number of
-	\verb|startups|\footnote{Constantly rising amount of web applications, that focus on fast growth of attracted users.
+	\verb|startups|\footnote{Constantly rising amount of web applications that focus on fast growth of attracted users.
 	They offer various services, which are often very innovative and experimental. One successful example is popular
 	social network and my favorite information channel - Twitter.}, who often provide RESTful or different type of public
 	\gls{API}.
@@ -23,7 +23,7 @@
 	
 	\subsection{Main principles of REST, RESTful web service}
 	
-	There are several architectural principles, that one should keep in mind when thinking of REST \cite[p.~3]{restful}:
+	There are several architectural principles that one should keep in mind when thinking of REST \cite[p.~3]{restful}:
 	
 	\begin{itemize}
 	  	\item \textbf{Addressable resources} 
@@ -54,7 +54,7 @@
 	and scalable systems on top of it, but there is a cost. They often bring huge complexity and maintenance requirements
 	into place.
 	
-	Currently, when one says \gls{SOA}, it often evokes \gls{SOAP} in a mind, that spent several years using technologies
+	Currently, when one says \gls{SOA}, it often evokes \gls{SOAP} in a mind that spent several years using technologies
 	mentioned above. This however is not a bad thing. \gls{SOAP} is used very widely and is perfectly suitable for
 	developing services and \gls{API}s. But it is definitely not a lightweight technology and it is not ideal for
 	everything. Its most common use case is for server-server communication in enterprise systems.
@@ -66,7 +66,7 @@
 	Although \gls{REST} is not protocol specific, when saying \gls{REST} it usually automatically means \gls{REST} +
 	\gls{HTTP}. No wonder. \gls{HTTP} is perfectly suitable for client-server \gls{SOA}, it is just about the way of
 	thinking. It offers transport layer, request-response mechanism, descriptive responses, caching mechanism and many
-	more. It is true, that in past years, when various types of web applications started to appear, many web developers
+	more. It is true that in past years, when various types of web applications started to appear, many web developers
 	limited their thinking and use of \gls{HTTP} to two basic cases:
 	
 	\begin{itemize}
@@ -111,7 +111,7 @@
 	Also the request does not contain any request body, as it is GETting information from the server. 
 	
 	The response of the message received is 200, which means OK - success. An overview of all available HTTP response codes
-	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message says, that the body
+	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message says that the body
 	received is of type HTML.
 	
 	RESTful web service needs more than that and luckily \gls{HTTP} offers much more. It will be better to point out its
@@ -239,7 +239,7 @@
 	browser. It stores so called \textbf{Cookies} when a server asks for it in response headers, which are then sent back
 	to the server with subsequent requests. This is how the server handles stateful interaction with the client over HTTP.
 	
-	Stateless communication in REST means, that there is no client session data stored on a server. In other words, none of
+	Stateless communication in REST means that there is no client session data stored on a server. In other words, none of
 	the above is performed. It does not mean that RESTful application cannot be stateful, though.
 	
 	Reason for this is simplicity, which further leads to easily scalable RESTful service. It is generally much less
@@ -315,6 +315,46 @@
 	</terms>
 	\end{lstlisting}
 	
+	This concept of HATEOAS is called aggregation. But it isn't everything. In a case that the server would return
+	thousands of term objects and each of them would contain thousands of registrations including admissions, the response
+	would be, again, very large. However, there is one even more interesting part of HATEOAS - the \uv{engine}.
 	
+	Core of the engine principle is not to return the whole set of object available, but just a subset of it and to
+	tell the client, where to find the rest:
+	
+	\begin{lstlisting}[tabsize=2]
+	<terms>
+		<count>5</count>
+		<totalCount>123</totalCount>
+		<link href="http://.../term?page=3&count=5" method="GET" 
+			rel="next" />
+		<link href="http://.../term?page=1&count=5" method="GET" 
+			rel="previous" />
+		<term>
+			...
+			<registrations>
+				<registration>
+					<admission>
+						<accepted>false</accepted>
+						<link href="http://.../admission/96858805" 
+							method="GET" rel="admission" />
+					</admission>
+					<term>
+						<link href="http://.../term
+						/dateOfTerm:2012-05-10T14:22:00/room:BS"
+							method="GET" rel="term" />
+					</term>
+				</registration>
+				...
+			</registrations>
+			...
+		</term>
+		...
+	</terms>
+	\end{lstlisting}
+	
+	This approach saves a lot of server resources and prevents client from unexpected delays due to large responses. Such
+	response should be always returned in constant time, because the request query defines its maximum size - number of
+	objects.
 	
 	\section{REST, Java and JAX-RS}
