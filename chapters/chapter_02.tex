@@ -111,8 +111,8 @@
 	Also the request does not contain any request body, as it is GETting information from the server. 
 	
 	The response of the message received is 200, which means OK - success. An overview of all available HTTP response codes
-	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message tells us, that the body
-	received it of type HTML.
+	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message says, that the body
+	received is of type HTML.
 	
 	RESTful web service needs more than that and luckily \gls{HTTP} offers much more. It will be better to point out its
 	features in a relationship to each of REST's architectural principles.
@@ -157,7 +157,53 @@
 	/123-456-01
 	\end{verbatim}
 	
-	\subsection{A uniform, constrained interface, HTTP methods}
+	Characters allowed in \gls{URI} string are all alphanumeric, comma, dash, asterisk and underscore. Space is converted
+	into plus and other characters are encoded using specific schema into a two digit hexadecimal number, which is appended
+	to the \% character.
+	
+	\subsection{The uniform, constrained interface, HTTP methods}
+	
+	This is probably the prettiest part of a relationship between REST and HTTP. It may be a bit difficult to adopt this
+	principle for a person, who spent a couple of years developing CORBA or SOAP services.  There is a finite set of HTTP
+	methods and all REST operations have to stick to it. All other parameters describing operations must be omitted from
+	\gls{URI}.
+
+	Let's see what \gls{HTTP} offers:
+	
+	\begin{table}[h]\centering
+	 	\begin{minipage}{12.9cm}
+		\begin{tabular}{l|c|c|p{6cm}}
+		\hline
+		Method & \verb|Idempotent|\footnote{Idempotent means that no matter how many times you apply the operation, 
+		the result is always the same.} & \verb|Safe|\footnote{Safe means that invoking an operation does not change the 
+		state of the server at all. This means that, other than request load, the operation will not affect the server.} 
+		& Operation(s)\\
+		\hline
+		GET & yes & yes & read - query information from a server\\
+		POST & no & no & write, update - both can change a server state in a unique way each time executed\\
+		PUT & yes & no & update for the known resource, updating the same resource more than once does not effect it\\
+		DELETE & yes & no & delete - removes resource\\
+		HEAD & yes & yes & read without response body, returns only response headers\\
+		OPTIONS & yes & yes & information about communication options with server\\
+		\end{tabular}
+	    \renewcommand{\footnoterule}{}
+	    \end{minipage}
+	\caption{An overview of HTTP methods and their roles in a RESTful service}
+	\label{http_methods}
+	\end{table}
+	
+	HTTP contains a few other methods (TRACE, CONNECT), which are unimportant for purposes of RESTful services.
+	
+	What is more interesting, nowadays a couple of non-HTTP methods have appeared, which may be good for RESTful service
+	design in the future. Namely PATCH (very similar to the PATCH method found in \verb|WebDAV|\footnote{WebDAV stands for
+	Web-based Distributed Authoring and Versioning. It is a set of extensions to the HTTP protocol which allows users to 
+	collaboratively edit and manage files on remote web servers.}) and MERGE. According to various sources I have found on
+	the web, namely \cite{httppatch}, \cite{msdnpatchmerge} or \cite{rfc2616}, they may appear in further HTTP
+	specifications. They are not a part of current HTTP 1.1.
+	
+	PATCH and MERGE are used for partial update of known resources that contain large amount od data and updating the whole
+	object would be a lengthy and ineffective operation. This however can be simulated using POST and specifying detailed
+	path of the resource via URI.
 
 	\subsection{Communicate statelessly, (no)sessions}
 	
