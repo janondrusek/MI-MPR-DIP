@@ -232,7 +232,7 @@
 	To choose preferred format(s), client can specify \textbf{Accept} HTTP header in a request. Now it becomes more clear
 	how REST and HTTP perfectly fit each other. Together they offer addresability, method choice and object representation
 	format.
-
+	
 	\subsection{Communicate statelessly, (no)sessions}
 	
 	HTTP offers powerful client session management, which is commonly used when browsing the web via traditional web
@@ -248,8 +248,73 @@
 	
 	\subsection{HATEOAS}
 	
-	\section{Why not SOAP?}
+	\cite[p.~11]{restful} Hypermedia is a document-centric approach with the added support for embedding links to other
+	services and information within that document format.
 	
-	\section{REST vs. SOAP}
+	There are several ways how to understand any apply this RESTful architectural principle. One use case is to add
+	hyperlinks when composing complex and large objects. This avoids unexpected server load, delay in response to the
+	client and helps to reference dependent or embedded objects without bloating the response.
+	
+	An example of server response without any hyperlinks:
+	
+	\begin{lstlisting}[tabsize=2]
+	<terms>
+		<term>
+			...
+			<registrations>
+				<registration>
+					<admission>
+						<code>96858805</code>
+						<type>P</type>
+						<accepted>false</accepted>
+						... some huge object containing 
+						a lot of information
+					</admission>
+					<term>
+						<dateOfTerm>2012-05-10...</dateOfTerm>
+						<room>BS</room>
+						<capacity>1500</capacity>
+						<registerFrom>2012-05-03...</registerFrom>
+						<registerTo>2012-05-08...</registerTo>
+						<apologyTo>2012-05-08...</apologyTo>
+						... another huge object containing 
+						a lot of information, graph can be even circular
+					</term>
+				</registration>
+				...
+			</registrations>
+			...
+		</term>
+		...
+	</terms>
+	\end{lstlisting}
+	
+	Let's apply embedded hyperlinks on the document above:
+	
+	\begin{lstlisting}[tabsize=2]
+	<terms>
+		<term>
+			...
+			<registrations>
+				<registration>
+					<admission>
+						<link href="http://.../admission/96858805" 
+						method="GET" rel="admission" />
+					</admission>
+					<term>
+						<link href="http://.../term
+						/dateOfTerm:2012-05-10T14:22:00/room:BS"
+							method="GET" rel="term" />
+					</term>
+				</registration>
+				...
+			</registrations>
+			...
+		</term>
+		...
+	</terms>
+	\end{lstlisting}
+	
+	
 	
 	\section{REST, Java and JAX-RS}
