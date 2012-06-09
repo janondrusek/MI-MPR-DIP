@@ -114,3 +114,74 @@
 	of this work.
 
 	\section{Execution engine - jBPM}
+	
+	\cite{jbpm}
+	jBPM is a flexible \gls{BPM} Suite. It's light-weight, fully open-source (distributed under
+	Apache license) and written in Java. It allows to model, execute and monitor business processes, throughout their life
+	cycle.
+	
+	\begin{figure}[h]
+	  	\centering
+	    \includegraphics[width=12cm]{figures/jbpm_process.png}
+	  	\caption{Example jBPM process as shown in \cite{jbpm}}
+	\end{figure}
+	
+	A business process allows to model various business goals by describing the steps that need to be executed to achieve
+	that goal and the order, using a flow chart. This greatly improves the visibility and agility of a business logic.
+	jBPM focuses on executable business process, which are business processes that contain enough detail so they can
+	actually be executed on a BPM engine. Executable business processes bridge the gap between business users and
+	developers as they are higher-level and use domain-specific concepts that are understood by business users but can also
+	be executed directly.
+
+	The core of jBPM is a light-weight, extensible workflow engine written in pure Java that allows to execute business
+	processes using the latest \gls{BPMN} 2.0 specification. It can run in any Java environment, embedded in an application
+	or as a service.
+
+	BPM makes the bridge between business analysts, developers and end users, by offering process management features and
+	tools in a way that both business users and developers like it. Domain-specific nodes can be plugged into the palette,
+	making the processes more easily understood by business users.
+
+	jBPM supports adaptive and dynamic processes that require flexibility to model complex, real-life situations that
+	cannot easily be described using a rigid process. jBPM is also not just an isolated process engine. Complex business
+	logic can be modeled as a combination of business processes with business rules and complex event processing. jBPM can
+	be combined with the Drools project to support one unified environment that integrates these paradigms where business
+	logic can be modelled as a combination of processes, rules and events.
+
+	Apart from the core engine itself, there are a few optional components that can be used. Eclipse-based or web-based
+	business process designer and a management console for the execution engine.
+
+	\subsection{jBPM Core Engine}
+	
+	The core jBPM engine is the heart of the jBPM project. It's a light-weight workflow engine that executes business
+	processes.
+	It can be embedded as a part of an application or deployed as a service. It's most important features are:
+	
+	\begin{itemize}
+	  \item Solid, stable core engine for executing process instances
+	  \item Native support for the latest BPMN 2.0 specification for modeling and executing business processes
+	  \item Strong focus on performance and scalability
+	  \item Light-weight (can be deployed on almost any device that supports a simple Java Runtime Environment, does not
+	  require any web container at all)
+	  \item (Optional) pluggable persistence with a default JPA implementation
+	  \item Pluggable transaction support with a default JTA implementation
+	  \item Implemented as a generic process engine, so it can be extended to support new node types or other process
+	  languages
+	  \item Listeners to be notified of various events
+	  \item Ability to migrate running process instances to a new version of their process definition
+	\end{itemize}
+
+	The core engine can also be integrated with a few other (independent) core services:
+	
+	\begin{itemize}
+	  \item The human task service can be used to manage human tasks when human actors need to participate in the process.
+	  It is fully pluggable and the default implementation is based on the WS-HumanTask specification and manages the life
+	  cycle of the tasks, task lists, task forms and some more advanced features like escalation, delegation, rule-based
+	  assignments, etc.
+	  \item The history log can store all information about the execution of all the processes on the engine. This is
+	  necessary if access to historic information is needed as runtime persistence only stores the current state of all
+	  active process instances. The history log can be used to store all current and historic state of active and completed
+	  process instances.
+	  
+	  It can be used to query for any information related to the execution of process instances, for
+	  monitoring, analysis, etc.
+	\end{itemize}
