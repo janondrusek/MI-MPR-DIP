@@ -48,3 +48,69 @@
 		\item \textbf{Interactions with external systems} e.g., sending a booking request to an airline
 		\item \textbf{Arbitrary programmatic logic} e.g., calculating the priority of a manual task	   
 	\end{itemize}
+	
+	\section{BPM application}
+	
+	BPM is suited only for applications with an essential sense of state or process that is, applications that are
+	process-oriented. Typical characteristics of a process-oriented application are:
+	
+	\begin{itemize}
+		\item \textbf{Long-running}
+		From start to finish, the process spans hours, days, weeks, months, or more.
+		\item \textbf{Persisted state}
+		Because the process is long-lived, its state is persisted to a database so that it outlasts the server hosting it.
+		\item \textbf{Bursty, sleeps most of the time}
+		The process spends most of its time asleep, waiting for the next triggering event to occur, at which point it wakes up
+		and performs a flurry of activities.
+		\item \textbf{Orchestration of system or human communications}
+		The process is responsible for managing and coordinating the communications of various system or human actors.
+	\end{itemize}
+
+	\section{BPM standards}
+	
+	BPM is not that difficult. The business analyst designs the process, the process is run by an engine, and the engine
+	has EAI and human interaction capabilities. Questions appear when it comes to selection of a right solution, design and
+	modelling tools, runtime engine, \ldots
+	
+	It is good to look for some well known and widely accepted approach. BPM does not lack standards. The adoption of
+	\gls{BPEL} and \gls{BPMN} is a recipe for success. According to \cite[Ch.~1.3.1]{bpm}, the important BPM standards are:
+	
+	\begin{itemize}
+		\item \gls{BPEL4WS}, sometimes shortened to \textbf{\gls{BPEL}}
+		
+		A BPEL process is a web service with an associated process definition defined in an XML-based language. The behavior
+		of a BPEL process is to act on, and be acted on by, other processes; put differently, a BPEL process can invoke
+		another web service or be invoked as a web service.
+	  	\item \textbf{\gls{BPML}}
+	  
+		From the \gls{BPMI} organization, which is an XML-based process definition language similar to BPEL. BPMN, another
+	  	specification from BPMI, is a sophisticated graphical notation language for processes. Significantly, the BPMN
+	  	specification includes a mapping to BPML-rival BPEL, which facilitates the execution of BPMN-designed processes on
+	  	BPEL engine.
+	  	\item \textbf{Web services choreography}
+	
+	  	Choreography describes, from a global point of view, how web services are arranged in a control view spanning
+	  	multiple participants. Choreography's global view is contrasted with the local view of process orchestration in
+	  	languages such as BPEL; a BPEL process is the process of a single participant, and a choreography is the interaction
+	  	model for a group of participants. \gls{WSCDL} is the W3C's recommended choreography standard.
+	
+	  	\item \gls{WfMC} has published a BPM reference model, as well as a set of interfaces for various parts of the BPM
+	  	architecture. Though WfMC does not specify a standard graphical process notation, it does provide an exportable XML
+	  	format called XML Process Definition Language (XPDL); processes built in an XPDL-compliant design tool can run on a
+	  	WfMC enactment engine.
+	  	
+	  	\item \textbf{\gls{OMG}} did not aim build a new process language or interface but abstract BPM models conforming to
+	  	its \gls{MDA}.
+	  	\item \textbf{\gls{BPSS}} from OASIS group
+
+	  	A choreography language, but is built for business-to-business collaborations. In a typical exchange between a buyer
+	  	and seller, for example, the buyer sends a request to the seller, to which the seller responds immediately with
+	  	consecutive acknowledgements of receipt and acceptance. When the seller has finished processing the request, it
+	  	sends an indication of this to the buyer, and the buyer in turn sends an acknowledgement of the indication to the
+	  	seller.
+	\end{itemize}
+	
+	From the above are only two standards worth considering. BPEL and BPMN, which I am going to describe in analytical part
+	of this work.
+
+	\section{Execution engine - jBPM}
