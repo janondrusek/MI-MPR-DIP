@@ -1,2 +1,50 @@
 \chapter{BPM and jBPM}\label{bpm}
 
+	\cite{bpm}
+	Business process modeling (BPM), sometimes called business process management, refers to the design and execution of
+	business processes.
+	
+	It does not have to be necessarily used in a context of \gls{IT} and software development. Primary field of BPM falls
+	into management, though. Before \gls{ICT} was widely spread and automatic software processing was a dream, BPM was
+	manual and paper driven.
+
+	But yes, BPM is also closely aligned with the notion of \gls{SOA}, particularly the emerging W3C web services
+	stack. Whereas the traditional use of a workflow was about the movement of work from person to person within an
+	organization, contemporary BPM processes are built to interact as services with other systems, or even to orchestrate
+	or choreograph other systems, including the business processes of other companies.
+
+	\section{Business Process}
+
+	A business process is a service, one intended to be called by other systems, and these calls drive its execution.
+	Realizing this fact is one of the first big steps in understanding BPM.
+	
+	Being algorithmic, a process can potentially be run by some sort of process engine. As long as the process can be
+	expressed in a form that is syntactically and semantically unambiguous that is, in a programming language or other
+	interpretable form the engine can accept it as input, set it in motion, and drive its flow of control. To be precise,
+	the engine creates and runs instances of a given process definition. The steps of the process are called activities or
+	tasks.
+	
+	\section{Important process modelling terms}
+	\begin{itemize}
+		\item \textbf{Process definition}
+		The basic algorithm or behavior of the process.
+		\item \textbf{Process instance}
+		An occurrence of a process for specific input. Each instance of the travel reservation process, for example, is tied
+		to a specific customer's itinerary.
+		\item \textbf{Activity or task}
+		A step in a process, such as sending a flight request to the airline.
+		\item \textbf{Automated activity or automated task}
+		A step in a process that is performed directly by the execution engine.
+		\item \textbf{Manual activity or manual task}
+		A step in a process that is meant to be performed by a human process participant. 
+	\end{itemize}
+	
+	The distinction between manual and automated activities is extremely important. At one time, before the reign of
+	software, a business process was completely manual and paper-driven: paper was passed from person to person, and was
+	often misplaced or delayed along the way. Now, much of the process runs on autopilot.
+
+	Automated activities generally fall into two categories:
+	\begin{itemize}
+		\item \textbf{Interactions with external systems} e.g., sending a booking request to an airline
+		\item \textbf{Arbitrary programmatic logic} e.g., calculating the priority of a manual task	   
+	\end{itemize}
