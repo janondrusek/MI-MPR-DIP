@@ -161,7 +161,77 @@
 	\end{itemize}
 	
 	During the development process several changes were made to the catalogue of requirements. RESTful API team and UI team
-	switched responsibilities for  F07, F08. F03 was descoped but can be implemented when needed.
+	switched responsibilities for  F07, F08. F03 was descoped but can be implemented with relatively small effort when
+	needed.
 	
 	NF07.1 is a matter of infrastructure. While this work was being created, only one virtual server was available for the
 	whole Přiříz project and makes no sense to configure multiple instances on a single machine.
+	
+	\section{Who and how will use RESTful API?}
+	
+	I already mentioned that RESTful API will be consumed by two different teams \ref{fig:pririz_project_component}. This
+	is their simplified requirements catalogue - functional requirements only:
+	
+	\begin{figure}[h]
+	  	\centering
+	  	\label{fig:pririz_project_component}
+	    \includegraphics[width=8cm]{figures/pririz_project_component}
+	  	\caption{Přiříz project components}
+	\end{figure} 
+	
+	\begin{itemize}
+		\item Android team
+
+		Responsible for native Android application development. Its tasks are:
+			\begin{itemize}
+				\item allow to log-in in various user roles
+				\item log-out
+				\item barcode identification
+				\item view admission/admissioner information
+				\item save admission result - entrance exam score
+				\item take a picture of a document and upload it to server 
+			\end{itemize}
+	  \item UI team
+	  
+	  	Implements web interface. This allows admissioners and CTU FIT's employees to interact with admissions and
+	  	manage them during admission process.
+		\begin{itemize}
+			\item Admission/Admissioner
+			\begin{itemize}
+				\item log-in/log-out
+				\item view personal information
+				\item book a term (entrance exam, enrollment)
+				\item apologise from a term registration
+				\item change/reset password
+			\end{itemize}
+			\item Employee (Study Department staff, sub dean, Faculty departments staff)
+			\begin{itemize}
+			  	\item log-in/log-out
+				\item list admissions, filter
+				\item view admission detail
+				\item edit/delete admission
+				\item reset user's password by admission
+				\item view terms (entrance exam, enrollment)
+				\item create/edit/delete terms
+				\item import admission data from \gls{KOS}
+				\item view study programs
+				\item edit/delete study programme
+				\item confirm admissioner's attendance at entrance exam or enrollment
+				\item accept or decline admissioner's apology
+				\item edit properties of an admission process 
+				\item view statistics
+				\item change password
+			\end{itemize}
+		\end{itemize} 
+	\end{itemize}
+
+	Although UI teams has quite long list of task when compared to Android's, they practically overlap.
+	This is why both (and for future all) teams are going to share the same API and RESTful API will handle all consumers
+	the same way.
+
+	All requirements from the list above, but those platform specific, will use RESTful API as a backend and should not
+	store any persistent data on their own. Platform specific means that they must store runtime data on their own. An
+	example may be HTTP session or other temporaries.
+
+	The task for RESTful API team is to expose a public API, which will satisfy requirements from the list above.
+	 
