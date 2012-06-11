@@ -121,6 +121,31 @@
 	
 	\section{JAX-RS implementation}
 	
+	In theoretical part \ref{sec:jaxrs} of this work I briefly described JAX-RS. Standard JVM contains only the JAX-RS
+	API, but there is no implementation out of box. Luckily, Java developers community is one of the biggest among
+	available enterprise solutions and probably the biggest \gls{OSS} enterprise community.
+	One of the advantages of such a number of developers is that there is an endless choice of frameworks, utilities and
+	other libraries. When it comes to popular JAX-RS implementations these are worth noticing:
+	
+	\begin{itemize}
+	  \item Apache CXF
+	  
+	  Very complex, popular and pleasant to use.
+	  \item Jersey
+	  
+	  Oracle's reference implementation.
+	  \item RESTeasy
+	  
+	  From JBoss Community.
+	\end{itemize}
+	
+	Personally I tried Apache CXF and RESTeasy. Although any of the above would work well for RESTful API, I have best
+	experience with Apache CXF. It offers much more than just plain JAX-RS implementation. Spring framework integration is
+	available, error handling is very neat and makes RESTful API server development a breeze.
+	
+	Moreover it also contains \gls{JAXWS} implementation, which might be useful for future, when SOAP integration is
+	required. This will keep REST and SOAP parts consistent across the whole source code.
+	
 	\section{Spring Core, MVC, Security, \ldots}
 	
 	\section{Spring Roo}
