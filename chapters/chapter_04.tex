@@ -132,6 +132,7 @@
 		jBPM engine requires properly configured mail sender to be able to use CTU's mail server
 		
 		\item NF03 Technologies
+		\label{NF03}
 		
 		use the following for implementation: JEE, Apache Maven, jBPM, Spring Framework, Spring Roo, JPA
 		
@@ -167,7 +168,7 @@
 	NF07.1 is a matter of infrastructure. While this work was being created, only one virtual server was available for the
 	whole Přiříz project and makes no sense to configure multiple instances on a single machine.
 	
-	\section{Who and how will use RESTful API?}
+	\section{Who and how will use RESTful API?}\label{sec:who_will_use}
 	
 	I already mentioned that RESTful API will be consumed by two different teams \ref{fig:pririz_project_component}. This
 	is their simplified requirements catalogue - functional requirements only:
@@ -225,7 +226,7 @@
 		\end{itemize} 
 	\end{itemize}
 
-	Although UI teams has quite long list of task when compared to Android's, they practically overlap.
+	Although UI team has quite a long list of task when compared to Android's, they practically overlap.
 	This is why both (and for future all) teams are going to share the same API and RESTful API will handle all consumers
 	the same way.
 
