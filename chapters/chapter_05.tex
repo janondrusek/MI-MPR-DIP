@@ -119,6 +119,58 @@
 	user friendly visual modelling tool is required. That is why BPMN 2.0 looks like a good choice. Luckily jBPM, which was
 	chosen as a primary technology for this master's thesis, fully implements BPMN 2.0 standard.
 	
+	\section{Dependency management}
+	
+	One of the myths about Java development that is well established among people talks about some kind of JAR hell.
+	Basically it is a nickname for class loading problem, which used to be an issue some time ago. Nowadays there are tons
+	of tools available that effectively solve such issues, one just needs to keep following the progress.
+	
+	A solution is to use standardized Java project structure, right build tools and dependency management tools. There are
+	dozens of such utilities but the two mainstream ones are:
+	
+	\begin{itemize}
+		\item Apache Ant + Apache Ivy
+
+		\cite{ant}		
+		Apache Ant is a Java library and command-line tool whose mission is to drive processes described in build files as
+		targets and extension points dependent upon each other. The main known usage of Ant is the build of Java applications.
+		Ant supplies a number of built-in tasks allowing to compile, assemble, test and run Java applications.
+		
+		Ant is extremely flexible and does not impose coding conventions or directory layouts to the Java projects which adopt
+		it as a build tool.
+
+		Software development projects looking for a solution combining build tool and dependency management can use Ant in
+		combination with Apache Ivy.
+		
+		\cite{ivy}
+		Apache Ivy is a dependency manager oriented toward Java dependency management, although it can be used to manage
+		dependencies of any kind. Apache Ivy is integrated with Apache Ant, the most popular Java build management system, so
+		Apache Ivy follows Apache Ant design principles.
+		\item Apache Maven
+	  
+		\cite{maven}
+	  	Apache Maven is a software project management and comprehension tool. Based on the concept of a \gls{POM}, Maven can
+	  	manage a project's build, reporting and documentation from a central piece of information.
+	  
+	  	Maven's primary goal is to allow a developer to comprehend the complete state of a development effort in the
+	  	shortest period of time. In order to attain this goal there are several areas of concern that Maven attempts to deal
+	  	with:
+		
+		\begin{itemize}
+			\item Making the build process easy
+			\item Providing a uniform build system
+			\item Providing quality project information
+			\item Providing guidelines for best practices development
+			\item Allowing transparent migration to new features
+		\end{itemize}
+	\end{itemize}
+	
+	Combination of Ant and Ivy is suitable for older, already existing Java projects that use Ant scripts for build
+	process. Ivy will allow to remove hard copied JAR files and enable dependency management using remote JAR repositories.
+	
+	Maven 2 on the other hand is currently the most commonly used project management and comprehension tool. Dependency
+	management and project build are just a small part of its capabilities.
+	
 	\section{JAX-RS implementation}
 	
 	In theoretical part \ref{sec:jaxrs} of this work I briefly described JAX-RS. Standard JVM contains only the JAX-RS
@@ -141,11 +193,13 @@
 	
 	Personally I tried Apache CXF and RESTeasy. Although any of the above would work well for RESTful API, I have best
 	experience with Apache CXF. It offers much more than just plain JAX-RS implementation. Spring framework integration is
-	available, error handling is very neat and makes RESTful API server development a breeze.
+	available, error handling is very neat and makes RESTful API server or client development a breeze.
 	
 	Moreover it also contains \gls{JAXWS} implementation, which might be useful for future, when SOAP integration is
 	required. This will keep REST and SOAP parts consistent across the whole source code.
 	
 	\section{Spring Core, MVC, Security, \ldots}
+	
+	
 	
 	\section{Spring Roo}
