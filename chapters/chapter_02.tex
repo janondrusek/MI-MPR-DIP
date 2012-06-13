@@ -18,8 +18,7 @@
 	for it.
 	So what is it then? It is and architectural and programming style for Web, where a set of constraints is defined. Lots
 	of text has been written about it during past years and describing the whole idea of REST is out of scope of this
-	master's thesis. I can however try to point out the most significant, important and basically, what I personally
-	managed to adopt.
+	master's thesis. I can, however, try to point out the most significant and what I personally managed to adopt.
 	
 	\subsection{Main principles of REST, RESTful web service}
 	
@@ -55,7 +54,7 @@
 	into place.
 	
 	Currently, when one says \gls{SOA}, it often evokes \gls{SOAP} in a mind that spent several years using technologies
-	mentioned above. This however is not a bad thing. \gls{SOAP} is used very widely and is perfectly suitable for
+	mentioned above. This, however, is not a bad thing. \gls{SOAP} is used very widely and is perfectly suitable for
 	developing services and \gls{API}s. But it is definitely not a lightweight technology and it is not ideal for
 	everything. Its most common use case is for server-server communication in enterprise systems.
 	
@@ -63,7 +62,7 @@
 	oriented. This needs a completely different approach and new way of thinking when it comes to \gls{SOA}. It is about
 	Web, so why not to start with something that is Web, as we see it today, based on? Yes, it is \gls{HTTP}.
 	
-	Although \gls{REST} is not protocol specific, when saying \gls{REST} it usually automatically means \gls{REST} +
+	Although \gls{REST} is not protocol specific, when saying \gls{REST}, it usually automatically means \gls{REST} +
 	\gls{HTTP}. No wonder. \gls{HTTP} is perfectly suitable for client-server \gls{SOA}, it is just about the way of
 	thinking. It offers transport layer, request-response mechanism, descriptive responses, caching mechanism and many
 	more. It is true that in past years, when various types of web applications started to appear, many web developers
@@ -201,9 +200,9 @@
 	the web, namely \cite{httppatch}, \cite{msdnpatchmerge} or \cite{rfc2616}, they may appear in further HTTP
 	specifications. They are not a part of current HTTP 1.1.
 	
-	PATCH and MERGE are used for partial update of known resources that contain large amount od data and updating the whole
-	object would be a lengthy and ineffective operation. This however can be simulated using POST and specifying detailed
-	path of the resource via URI.
+	PATCH and MERGE are used for partial update of known resources that contain large amount of data and updating the whole
+	object would be a lengthy and ineffective operation. This, however, can be simulated using POST and specifying a
+	detailed path of the resource via URI.
 	
 	\subsection{Representation-oriented}
 	
@@ -230,7 +229,7 @@
 	\end{verbatim}
 	
 	To choose preferred format(s), client can specify \textbf{Accept} HTTP header in a request. Now it becomes more clear
-	how REST and HTTP perfectly fit each other. Together they offer addresability, method choice and object representation
+	how REST and HTTP perfectly fit each other. Together they offer addressability, method choice and object representation
 	format.
 	
 	\subsection{Communicate statelessly, (no)sessions}
@@ -251,7 +250,7 @@
 	\cite[p.~11]{restful} Hypermedia is a document-centric approach with the added support for embedding links to other
 	services and information within that document format.
 	
-	There are several ways how to understand any apply this RESTful architectural principle. One use case is to add
+	There are several ways how to understand and apply this RESTful architectural principle. One use case is to add
 	hyperlinks when composing complex and large objects. This avoids unexpected server load, delay in response to the
 	client and helps to reference dependent or embedded objects without bloating the response.
 	
