@@ -297,8 +297,8 @@
 			 & & Dependency on bigger and slower application servers \\
 			 & & \verb|Uneasy to migrate|\footnote{JEE standards become deprecated after a while, this is a case of JEE 5 and
 			 JEE 6 will be no different. If one needs to upgrade an application from older to a newer standard, application
-			 server need to be upgraded too. This brings several problems including puchase of new licences, especially when
-			 commerce AS like WebSphere or WebLogic is used.} an application from one application server to another
+			 server needs to be upgraded too. This brings several problems including purchase of new licences, especially when
+			 commerce AS like WebSphere or WebLogic is used.} an application from one AS to another
 			 \\
 		\end{tabular}
 	    \renewcommand{\footnoterule}{}
@@ -307,5 +307,132 @@
 	\label{tab:jee6_vs_spring_3}
 	\end{table}
 	
+	After a closer look at what JEE 6 would offer at a price of slower development and dependency on AS, I can only see
+	everything I already know from Spring (I spent several years using it). Even if it would be sufficient to use JEE
+	Web Profile and not Full JEE Profile, which means simpler AS like TomEE.
+	
+	One of the goals of this master's thesis is to explore new and modern technologies. I do not see it in JEE 6. What
+	attracts me more is quite a new project - Spring Roo.
+	
 	\section{Spring Roo}
-		
+	
+	\cite{roo}
+	Spring Roo is a dynamic, domain-driven development framework from SpringSource. The Spring framework simplifies and
+	expedites application development through a three-pronged approach:
+	
+	\begin{itemize}
+		\item enables services on on POJOs - declaratively and transparently through dependency injection and aspect-oriented
+		programming
+		\item where functionality can’t be achieved effectively through those channels alone provides the simplest, cleanest
+		abstractions and APIs under the sun to solve problems 
+		\item simplify existing, often verbose APIs
+	\end{itemize} 
+
+	Isn't Roo redundant then? Spring is one of the most proficient ways to work with Java, but the current thinking
+	strongly supports the conclusion that the next barrier to enhancing productivity on the JVM is the Java language
+	itself.
+
+	Spring Roo is built using standard Java and uses standard Java and Spring. During development, Roo Shell watches the
+	developer while helping him out as much as possible and required. It is almost like a pair programming buddy or a very
+	advanced code completion tool.
+
+	Let's suppose an example of editing a JPA entity in Spring Roo project. I want to add a field \textbf{surname} to a
+	\textbf{Person} entity. As soon as I add the field, Spring Roo automatically jumps in and adds a corresponding accessor
+	and mutator pair for that field to a \verb|shadow class definition|\footnote{AspectJ \gls{ITD} that Spring Roo
+	maintains in the background. When an application compiles, the ITD is merged with the Java code, creating one class
+	that has both the field I typed in, as well as the automatically generated accessor and mutator pair, correct equals()
+	and hashCode() implementations, and a correct toString() implementation. One should never need to updat these ITD
+	definitions} in the background. Similarly, it will implement a \textbf{toString()} definition (reflecting the fields
+	added) if one does not already exist, and it will implement an \textbf{equals()} and \textbf{hashCode()} methods
+	following the same criteria. Updating the field triggers the same action.
+	
+	If I add an equals method to the JPA entity, the shadow definition is removed, delegating to my implementation instead.
+	This shadow class definition is kept in sync, responding to the changes, but it does not get in the way.
+	
+	An example \textbf{Person.java} entity:
+	
+	\lstset{language=Java}
+	\begin{lstlisting}[tabsize=2]
+	@RooJavaBean
+	@RooToString
+	@RooEquals(excludeFields = { "personId" })
+	@RooJpaActiveRecord(finders = { "findPeopleByEmailEquals" })
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public class Person {
+
+		@Id
+		@GeneratedValue(strategy = GenerationType.AUTO)
+		private Long personId;
+	}
+	\end{lstlisting}
+	
+	The shadow classes created are:
+	\begin{itemize}
+		\item Person\_Roo\_Configurable.aj
+	  
+	  	Enables Spring driven configuration. 
+	  	\item Person\_Roo\_Equals.aj
+	  
+	  	Adds \textbf{equals()} and \textbf{hashCode()} methods implementation.
+	  	
+	  	\begin{lstlisting}[tabsize=2]
+		privileged aspect Person_Roo_Equals {
+
+			public boolean Person.equals(Object obj) {
+			...
+			}
+	
+			public int Person.hashCode() {
+			...
+			}
+		}
+		\end{lstlisting}
+	  	\item Person\_Roo\_Finder.aj
+	  
+	  	Creates custom declared \textbf{@RooJpaActiveRecord(finders = { \ldots })} JPA query methods.
+	  	\item Person\_Roo\_JavaBean.aj
+	  
+		Accessors and mutators for Entity's fields.
+		\begin{lstlisting}[tabsize=2]
+		privileged aspect Person_Roo_JavaBean {
+	
+		public Long Person.getPersonId() {
+			return this.personId;
+		}
+	
+		public void Person.setPersonId(Long personId) {
+			this.personId = personId;
+		}
+		\end{lstlisting}
+	  	\item Person\_Roo\_Jpa\_ActiveRecord.aj
+	  	
+	  	Standard Roo JPA methods. Default finders (by primary key, \ldots) and CRUD enablers.
+	  	\item Person\_Roo\_Jpa\_Entity.aj
+	  	
+	  	Enables JPA entity.
+	  	\item Person\_Roo\_ToString.aj
+	  	
+	  	Adds \textbf{toString()} method implementation. 
+	\end{itemize}
+	
+	Of course, Spring Roo does not do anything unless it is asked for it. POJO needs to be properly annotated using Roo
+	Java annotations, otherwise no shadow class definition is created.
+	
+	Moreover it nicely integrates with popular IDEs like Eclipse and IDEA and works perfectly with Maven. Developer does
+	not have to care about the \textbf{.aj} files at all. They are hidden by default from project's view and the
+	\textbf{.java} implementation acts like all shadow class's methods were already merged.
+	
+	There are practically all features from Spring Roo that RESTful API will use. Of course, it offers much more:
+	
+	\begin{itemize}
+	  \item Database Reverse Engineering
+	  \item NOSQL support
+	  \item Extension of Spring MVC
+	  \item Scaffolding
+	  \item Spring Web Flow integration
+	  \item Integration with other, non-Spring, frameworks (GWT, Vaadin, \ldots)
+	  \item Logging, Security, \textbf{Testing}, \ldots
+	\end{itemize}
+
+	RESTful API uses Spring Roo automatically generated Unit and Integration tests for all domain models and active record
+	JPA methods.
