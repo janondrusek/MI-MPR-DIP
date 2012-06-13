@@ -209,8 +209,103 @@
 	possibly other utilities that might simplify development process.
 	
 	I know I wanted something widely spread because of quick community support and fair documentation state. Utilities like
-	Apache Commons, Collection Utils, \ldots is a must. But which framework to use if there are so many?
+	Apache Commons, Collection Utils, \ldots is a must. But which framework to choose if there are so many? Well from all
+	the available, I am going to look at the most popular ones. Good place to look or ask is Stack Overflow and this is
+	what community recommends:
+	
+	\begin{itemize}
+		\item Struts 2
+		\item Apache Wicket
+		\item Play
+		\item Spring 3
+		\item pure JEE
+	\end{itemize}
+	
+	The list is surprisingly short. Let's list my requirements too, because this should help me to apply method of
+	exclusion:
+	
+	\begin{itemize}
+		\item fully \gls{OSS}
+		\item easily configurable
+		\item extensible and plugin friendly
+		
+		No framework contains all one ever needs, therefore it must be easily extensible with custom components.
+		\item suitable for integration with other frameworks
+		
+		I need to integrate JAX-RS with the rest.
+		\item large community
+		\item good documentation
+		\item REST friendly
+		
+		RESTful application is considered to be a web application, but with one significant difference. When MVC patterrn is
+		applied, we can actually skip the View part, because RESTful API generates output based on client-server agreement
+		(the Accept HTTP header) and does not need any templates (JSP, FM, Velocity, \ldots). Therefore all JSF based frameworks
+		do not fit well, as JAX-RS handles the response and rendering.
+	\end{itemize}
+	
+	After the first round Struts 2 and Apache Wicket have to go. Struts is not complex enough and I did not find any
+	examples of integrating JAX-RS with Struts. Although there is a REST plugin for Struts, it is not JAX-RS implementation.
+	
+	Apache Wicket might be suitable for creating rich web applications, but again, no example of JAX-RS integration with
+	itself. I found a few tutorials for RESTful application with Wicket, unfortunately this is not what I was looking for.
+	
+	Play 2 framework seems very interesting. It is becoming quite popular and has an emerging community. I also
+	found a couple of discussions about integrating it with JAX-RS, but they were linking to already non-existing sources
+	and so I started to be rather pessimistic about using it for RESTful API. I would definitely give it a try when
+	creating a traditional web application.
+	
+	\section{Spring 3 vs. JEE 6}
+	
+	I decided to leave a duel of Spring 3 and pure JEE 6 framework at the end. Nowadays one can find dozens of discussions
+	about why JEE 6 is better than Spring 3 and why one group of developers claim that they are going to use purely JEE and
+	the other wants to stick with Spring 3.
+	
+	Both specifications came out in about the same time, late 2009. Both will do practically the same for an enterprise
+	application, but their philosophy is quite different. While JEE 6 wraps and defines several standards, technologies and
+	APIs e.g. Servlet 3.0, EJB 3.1, JAX-RS, JAX-WS, JAXB, JSF, \ldots  - their list is quite long \cite{oracle_jee}. It is
+	application server's task to implement JEE 6 standard. Because JEE 6 is not simple, certified application servers
+	tend to be quite big. Such application servers are JBoss AS 7, Glassfish 3.1, \ldots
+	
+	On the other hand there is Spring 3.0. It aims to promote modularity, extensibility and portability across Java EE
+	servlet containers - Tomcat, Jetty and others. One can integrate almost everything from the JEE standard with Spring
+	and lightweight servlet container, because Spring itself acts like an application server. Almost means, that not
+	everything is possible. EJB for instance will not work with plain servlet container.
+	
+	So what are the benefits of using one or another? If it is not necessary to use EJB and perhaps a few other
+	technologies exclusively provided by JEE 6, what makes JEE 6 or Spring a favorite?
+
+	\begin{table}[h]\centering
+	 	\begin{minipage}{12.9cm}
+		\begin{tabular}{p{1cm}|p{5.2cm}|p{5.2cm}}
+		\hline
+		& Spring 3 & JEE 6\\
+		\hline
+		Pros & Modular & Standards \\
+			 & Flexible &  \\
+			 & Deployable to a simple servlet container & Usually more \verb|complete implementation|\footnote{Each JEE standard
+			 comes with many new features. They often bring several inventions and better and more comeplete
+			 implementation of what is already available somewhere else. An example may be Spring DI and CDI, where CDI
+			 came out later than Spring's DI, but CDI is a superset of what Spring DI offers.}
+			 \\
+			 & Faster availability of new technologies &  \\
+			 & \verb|Faster development|\footnote{Especially in combination with very lightweight Jetty, development and
+			 deployment on a local machine is a matter of seconds when compared to a full application server and JEE} and
+			 deployment & \\
+		\hline
+		Cons & Subset of JEE 6 stack & Standards - not meant to be flexible \\
+			 & Not based on standards - but allows flexibility & Slower release cycle \\
+			 & & Dependency on bigger and slower application servers \\
+			 & & \verb|Uneasy to migrate|\footnote{JEE standards become deprecated after a while, this is a case of JEE 5 and
+			 JEE 6 will be no different. If one needs to upgrade an application from older to a newer standard, application
+			 server need to be upgraded too. This brings several problems including puchase of new licences, especially when
+			 commerce AS like WebSphere or WebLogic is used.} an application from one application server to another
+			 \\
+		\end{tabular}
+	    \renewcommand{\footnoterule}{}
+	    \end{minipage}
+	\caption{Spring 3 vs. JEE 6}
+	\label{tab:jee6_vs_spring_3}
+	\end{table}
 	
 	\section{Spring Roo}
-	
-	
+		
