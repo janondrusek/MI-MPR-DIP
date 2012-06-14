@@ -4,3 +4,67 @@
 	principles, design patterns and conventions taking the analytical part into account.
 
 	\section{Environment and new Spring Roo project setup}
+	
+	\subsection{Development platform}
+	
+	It is not a secret that developing applications for Java platform is resource consuming and requires solid performance
+	for effective work. Luckily today's computers provide good computing power since mid-level price range and purchasing
+	multi-core CPU and several GB of RAM is a standard.
+	
+	My configuration during development and writing this master's thesis was:
+	
+	\begin{itemize}
+		\item Dell Latitude E6410 laptop
+		\item CPU Intel Core i5 Quad Core @ 2.5GHz
+		\item 4GB RAM DDR3
+		\item 120GB SSD MLC hard drive 
+	\end{itemize}
+	
+	What is more important these days is developer's software equipment. Starting with OS, 64bit is a must. It depends on
+	a personal preference to use IDE or not and then of course various support tools like console or term emulator,
+	monitoring tools, \ldots
+
+	This is what I have been using:	
+
+	\begin{itemize}
+		\item Windows 7 64bit
+		\item Java 7 runtime (Oracle's JDK 1.7.0\_01)
+		\item Java 6 compile (due to Spring Roo, however, 1.7 became supported by the time of writing this work)
+		\item Maven 3.0.3
+		\item Cygwin 1.7.10 with Bash as a primary shell in Console2
+		\item Spring Roo 1.2.0, upgraded to 1.2.1, planned 1.2.2 upgrade with Java 1.7 support
+		\item Eclipse IDE, 3.7.2 Indigo
+		\begin{itemize}
+			\item Spring STS
+			
+			Spring Roo's installation path needs to be set up.
+			\item JBoss Tools  
+			
+			Maven tool should be switched from Eclipse's embedded implementation to the system wide installed one.
+		\end{itemize}
+	\end{itemize}
+	
+	To make all this work, it is required to set up system environment variables properly. Especially:
+	
+	\begin{itemize}
+		\item JAVA\_HOME
+		
+		Pointing to the JDK 7 installation directory.
+		\item MAVEN\_HOME
+		
+		Pointing to the Maven 3 installation directory.
+		\item ROO\_HOME
+		
+		Pointing to the Spring Roo 1.2 installation directory.
+		\item append all the above concatenated with \textbf{/bin} to the \textbf{PATH} variable 
+	\end{itemize}
+	
+	\subsection{Configuring the new project}
+	
+	\section{Application architecture and layers}
+	
+	\section{Test Driven Development}
+	
+	\section{Build, Deploy}
+	
+	\section{Profiling, Logging}
