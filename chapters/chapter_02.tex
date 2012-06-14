@@ -1,380 +1,187 @@
-\chapter{RESTful API with JAX-RS}\label{rest}
+\chapter{BPM and jBPM}\label{bpm}
 
-	Nowadays, Internet consumers demand fast growth of various services and integration of their favourite ones. As en
-	example I can point out synchronization of contact list between very popular social networks, e-mail providers and
-	phone contact lists. 
+	\cite{bpm}
+	Business process modeling (BPM), sometimes called business process management, refers to the design and execution of
+	business processes.
 	
-	Other example may be growing amount of \verb|mashups|\footnote{Applications that are created via
-	combination of multiple different services. Such application, almost exclusively web based, can be created very quickly
-	by consuming several \gls{API}s. Not necessarily from the same provider.} and uncountable number of
-	\verb|startups|\footnote{Constantly rising amount of web applications that focus on fast growth of attracted users.
-	They offer various services, which are often very innovative and experimental. One successful example is popular
-	social network and my favorite information channel - Twitter.}, who often provide RESTful or different type of public
-	\gls{API}.
+	It does not have to be necessarily used in a context of \gls{IT} and software development. Primary field of BPM falls
+	into management, though. Before \gls{ICT} was widely spread and automatic software processing was a dream, BPM was
+	manual and paper driven.
 
-	\section{Talking about REST, what is it?}
+	But yes, BPM is also closely aligned with the notion of \gls{SOA}, particularly the emerging W3C web services
+	stack. Whereas the traditional use of a workflow was about the movement of work from person to person within an
+	organization, contemporary BPM processes are built to interact as services with other systems, or even to orchestrate
+	or choreograph other systems, including the business processes of other companies.
+
+	\section{Business Process}
+
+	A business process is a service, one intended to be called by other systems, and these calls drive its execution.
+	Realizing this fact is one of the first big steps in understanding BPM.
 	
-	\gls{REST} or RESTful programming is not defined by any official standard and there are no official guidelines or rules
-	for it.
-	So what is it then? It is and architectural and programming style for Web, where a set of constraints is defined. Lots
-	of text has been written about it during past years and describing the whole idea of REST is out of scope of this
-	master's thesis. I can, however, try to point out the most significant and what I personally managed to adopt.
+	Being algorithmic, a process can potentially be run by some sort of process engine. As long as the process can be
+	expressed in a form that is syntactically and semantically unambiguous that is, in a programming language or other
+	interpretable form the engine can accept it as input, set it in motion, and drive its flow of control. To be precise,
+	the engine creates and runs instances of a given process definition. The steps of the process are called activities or
+	tasks.
 	
-	\subsection{Main principles of REST, RESTful web service}
-	
-	There are several architectural principles that one should keep in mind when thinking of REST \cite[p.~3]{restful}:
-	
+	\section{Important process modelling terms}
 	\begin{itemize}
-	  	\item \textbf{Addressable resources} 
-	  	The key abstraction of information and data in REST is a resource, and each resource must be addressable via a
-	  	\gls{URI}.
-		\item \textbf{A uniform, constrained interface}
-		Use a small set of well-defined methods to manipulate your resources.
-		\item \textbf{Representation-oriented}
-		You interact with services using representations of that service. A resource referenced by one URI can have different
-		formats. Different platforms need different formats. For example, browsers need HTML, JavaScript needs JSON
-		(JavaScript Object Notation), and a Java application may need XML.
-		\item \textbf{Communicate statelessly}
-		Stateless applications are easier to scale.
-		\item \textbf{\gls{HATEOAS}}
-		Let your data formats drive state transitions in your applications.
+		\item \textbf{Process definition}
+		The basic algorithm or behavior of the process.
+		\item \textbf{Process instance}
+		An occurrence of a process for specific input. Each instance of the travel reservation process, for example, is tied
+		to a specific customer's itinerary.
+		\item \textbf{Activity or task}
+		A step in a process, such as sending a flight request to the airline.
+		\item \textbf{Automated activity or automated task}
+		A step in a process that is performed directly by the execution engine.
+		\item \textbf{Manual activity or manual task}
+		A step in a process that is meant to be performed by a human process participant. 
 	\end{itemize}
 	
-	\gls{HATEOAS} is often understood as a core principle of \gls{REST}. It carries an idea of resource representation via
-	links and stateless implementation of services.
-	
-	RESTful web services are the result of applying these constraints to services that utilize web standards such as
-	\gls{URI}s, \gls{HTTP}, \gls{XML}, and \gls{JSON}.
-	
-	\subsection{Back to the roots, HTTP is reborn}
-	
-	\gls{SOA} has been in this world for a long time. Many different approaches and technologies exist to implement it.
-	From those worth to mention: DCE, CORBA, Java RMI, \ldots They offer robust standards, one can build large, complex
-	and scalable systems on top of it, but there is a cost. They often bring huge complexity and maintenance requirements
-	into place.
-	
-	Currently, when one says \gls{SOA}, it often evokes \gls{SOAP} in a mind that spent several years using technologies
-	mentioned above. This, however, is not a bad thing. \gls{SOAP} is used very widely and is perfectly suitable for
-	developing services and \gls{API}s. But it is definitely not a lightweight technology and it is not ideal for
-	everything. Its most common use case is for server-server communication in enterprise systems.
-	
-	Nowadays, we need something quickly adoptable, widely spreadable, platform and technology independent and client
-	oriented. This needs a completely different approach and new way of thinking when it comes to \gls{SOA}. It is about
-	Web, so why not to start with something that is Web, as we see it today, based on? Yes, it is \gls{HTTP}.
-	
-	Although \gls{REST} is not protocol specific, when saying \gls{REST}, it usually automatically means \gls{REST} +
-	\gls{HTTP}. No wonder. \gls{HTTP} is perfectly suitable for client-server \gls{SOA}, it is just about the way of
-	thinking. It offers transport layer, request-response mechanism, descriptive responses, caching mechanism and many
-	more. It is true that in past years, when various types of web applications started to appear, many web developers
-	limited their thinking and use of \gls{HTTP} to two basic cases:
-	
+	The distinction between manual and automated activities is extremely important. At one time, before the reign of
+	software, a business process was completely manual and paper-driven: paper was passed from person to person, and was
+	often misplaced or delayed along the way. Now, much of the process runs on autopilot.
+
+	Automated activities generally fall into two categories:
 	\begin{itemize}
-	  \item GET a page with \gls{URI}, perhaps containing a few query parameters
-	  \item POST a form
+		\item \textbf{Interactions with external systems} e.g., sending a booking request to an airline
+		\item \textbf{Arbitrary programmatic logic} e.g., calculating the priority of a manual task	   
 	\end{itemize}
 	
-	\begin{program}
-	\caption{HTTP GET request/response example of a standard web page}\label{http_get_web}
-	\begin{verbatim}
-	GET /index.html HTTP/1.1
-	User-Agent: curl/7.24.0 (i686-pc-cygwin) ...
-	Host: www.google.sk
-	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-	Accept-Language: sk-sk,en;q=0.5
-
-	HTTP/1.1 200 OK
-	Date: Thu, 07 Jun 2012 11:25:15 GMT
-	Expires: -1
-	Cache-Control: private, max-age=0
-	Content-Type: text/html; charset=ISO-8859-2
-	Set-Cookie: ... expires= ...; path=/; domain=.google.sk
-	Set-Cookie: ... expires= ...; path=/; domain=.google.sk; HttpOnly
-	Server: gws
-	X-XSS-Protection: 1; mode=block
-	X-Frame-Options: SAMEORIGIN
-	Transfer-Encoding: chunked
-
-	<!doctype html><html ...><head> ... <body> ...
-	\end{verbatim}
-	\end{program}
+	\section{BPM application}
 	
-	The example above \ref{http_get_web} shows most common HTTP request and response, when browsing the web via standard
-	web browser. It requests object \textbf{/index.html} using \textbf{GET} method placed on host \textbf{www.google.sk}.
-	My client also put several HTTP headers into the request:
+	BPM is suited only for applications with an essential sense of state or process that is, applications that are
+	process-oriented. Typical characteristics of a process-oriented application are:
 	
 	\begin{itemize}
-	  \item \textbf{Accept:} text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-	  \item \textbf{Accept-Language:} sk-sk,en;q=0.5
-	\end{itemize}
-	
-	Also the request does not contain any request body, as it is GETting information from the server. 
-	
-	The response of the message received is 200, which means OK - success. An overview of all available HTTP response codes
-	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message says that the body
-	received is of type HTML.
-	
-	RESTful web service needs more than that and luckily \gls{HTTP} offers much more. It will be better to point out its
-	features in a relationship to each of REST's architectural principles.
-	
-	\subsection{Addressable resources, URIs and links}
-	
-	Each \textbf{resource} in a system should be reachable through a \textbf{unique identifier}. When reflected to the idea
-	of REST and HTTP, URIs will automatically come to mind. The format of a URI looks like this \cite{uri}:
-	
-	\begin{verbatim}
-	<scheme>://<authority><path>?<query>
-	\end{verbatim}
-	
-	The above is a citation directly from RFC, but for purposes of this master's thesis should be rewritten into more
-	detailed form:
-	
-	\begin{verbatim}
-	<scheme>://<host>:<port>/<path>?<queryString>#<fragment>
-	\end{verbatim}
-	
-	Where in the RESTful world these parts usually mean:
-	\begin{itemize}
-	  \item \textbf{scheme} typically \textbf{http} or \textbf{https}
-	  \item \textbf{host} aka server name, e.g. \textbf{fit.cvut.cz} and \textbf{port}
-	  \item \textbf{path} to the resource on server, e.g. \textbf{/admission/123-456-01}
-	  \item \textbf{queryString} after the \textbf{?} is typically used for a set of resources and can be a page number,
-	  number of items in the set, or a filter definition and many more, e.g. \textbf{?page=1\&limit=10}
-	  \item \textbf{fragment} after the \textbf{\#} usually points to a certain place in a document
-	\end{itemize}
-	
-	An example of such URI pointing to a set of resources may be:
-	
-	\begin{verbatim}
-	http://pririz.is.fit.cvut.cz:9090/admission/services/admission
-		?page=2&count=20
-	\end{verbatim}
-	 
-	An example of URI pointing to a concrete single resource:
-	
-	\begin{verbatim}
-	http://pririz.is.fit.cvut.cz:9090/admission/services/admission
-	/123-456-01
-	\end{verbatim}
-	
-	Characters allowed in \gls{URI} string are all alphanumeric, comma, dash, asterisk and underscore. Space is converted
-	into plus and other characters are encoded using specific schema into a two digit hexadecimal number, which is appended
-	to the \% character.
-	
-	\subsection{The uniform, constrained interface, HTTP methods}
-	
-	This is probably the prettiest part of a relationship between REST and HTTP. It may be a bit difficult to adopt this
-	principle for a person, who spent a couple of years developing CORBA or SOAP services.  There is a finite set of HTTP
-	methods and all REST operations have to stick to it. All other parameters describing operations must be omitted from
-	\gls{URI}.
-
-	Let's see what \gls{HTTP} offers:
-	
-	\begin{table}[h]\centering
-	 	\begin{minipage}{12.9cm}
-		\begin{tabular}{l|c|c|p{6cm}}
-		\hline
-		Method & \verb|Idempotent|\footnote{Idempotent means that no matter how many times you apply the operation, 
-		the result is always the same.} & \verb|Safe|\footnote{Safe means that invoking an operation does not change the 
-		state of the server at all. This means that, other than request load, the operation will not affect the server.} 
-		& Operation(s)\\
-		\hline
-		GET & yes & yes & read - query information from a server\\
-		POST & no & no & write, update - both can change a server state in a unique way each time executed\\
-		PUT & yes & no & update for the known resource, updating the same resource more than once does not effect it\\
-		DELETE & yes & no & delete - removes resource\\
-		HEAD & yes & yes & read without response body, returns only response headers\\
-		OPTIONS & yes & yes & information about communication options with server\\
-		\end{tabular}
-	    \renewcommand{\footnoterule}{}
-	    \end{minipage}
-	\caption{An overview of HTTP methods and their roles in a RESTful service}
-	\label{http_methods}
-	\end{table}
-	
-	HTTP contains a few other methods (TRACE, CONNECT), which are unimportant for purposes of RESTful services.
-	
-	What is more interesting, nowadays a couple of non-HTTP methods have appeared, which may be good for RESTful service
-	design in the future. Namely PATCH (very similar to the PATCH method found in \verb|WebDAV|\footnote{WebDAV stands for
-	Web-based Distributed Authoring and Versioning. It is a set of extensions to the HTTP protocol which allows users to 
-	collaboratively edit and manage files on remote web servers.}) and MERGE. According to various sources I have found on
-	the web, namely \cite{httppatch}, \cite{msdnpatchmerge} or \cite{rfc2616}, they may appear in further HTTP
-	specifications. They are not a part of current HTTP 1.1.
-	
-	PATCH and MERGE are used for partial update of known resources that contain large amount of data and updating the whole
-	object would be a lengthy and ineffective operation. This, however, can be simulated using POST and specifying a
-	detailed path of the resource via URI.
-	
-	\subsection{Representation-oriented}
-	
-	I already described that each resource has its own URI and client-server principle using HTTP. Its methods allow the
-	client to receive current representation via GET method, remove it from server via DELETE or change the representation
-	via POST and PUT methods. Concrete representation can be received in JSON, XML, YAML or any other format one can
-	imagine.
-	
-	Representation format is agreed between client and server in a RESTful system interaction. HTTP offers such feature
-	by specifying \textbf{Content-Type} header. Its value string is represented by \gls{MIME} format:
-	
-	\begin{verbatim}
-	<type>/<subtype>[;name=value;name=value...]
-	\end{verbatim}
-	
-	An example may be:
-	
-	\begin{verbatim}
-	text/html; charset=utf-8
-	text/xml
-	text/json
-	application/xml
-	application/json
-	\end{verbatim}
-	
-	To choose preferred format(s), client can specify \textbf{Accept} HTTP header in a request. Now it becomes more clear
-	how REST and HTTP perfectly fit each other. Together they offer addressability, method choice and object representation
-	format.
-	
-	\subsection{Communicate statelessly, (no)sessions}
-	
-	HTTP offers powerful client session management, which is commonly used when browsing the web via traditional web
-	browser. It stores so called \textbf{Cookies} when a server asks for it in response headers, which are then sent back
-	to the server with subsequent requests. This is how the server handles stateful interaction with the client over HTTP.
-	
-	Stateless communication in REST means that there is no client session data stored on a server. In other words, none of
-	the above is performed. It does not mean that RESTful application cannot be stateful, though.
-	
-	Reason for this is simplicity, which further leads to easily scalable RESTful service. It is generally much less
-	difficult to build a cluster of stateless applications than to handle session replication and possibly another service
-	layer.
-	
-	\subsection{HATEOAS}
-	
-	\cite[p.~11]{restful} Hypermedia is a document-centric approach with the added support for embedding links to other
-	services and information within that document format.
-	
-	There are several ways how to understand and apply this RESTful architectural principle. One use case is to add
-	hyperlinks when composing complex and large objects. This avoids unexpected server load, delay in response to the
-	client and helps to reference dependent or embedded objects without bloating the response.
-	
-	An example of server response without any hyperlinks:
-	
-	\begin{lstlisting}[tabsize=2]
-	<terms>
-		<term>
-			...
-			<registrations>
-				<registration>
-					<admission>
-						<code>96858805</code>
-						<type>P</type>
-						<accepted>false</accepted>
-						... some huge object containing 
-						a lot of information
-					</admission>
-					<term>
-						<dateOfTerm>2012-05-10...</dateOfTerm>
-						<room>BS</room>
-						<capacity>1500</capacity>
-						<registerFrom>2012-05-03...</registerFrom>
-						<registerTo>2012-05-08...</registerTo>
-						<apologyTo>2012-05-08...</apologyTo>
-						... another huge object containing 
-						a lot of information, graph can be even circular
-					</term>
-				</registration>
-				...
-			</registrations>
-			...
-		</term>
-		...
-	</terms>
-	\end{lstlisting}
-	
-	Let's apply embedded hyperlinks on the document above:
-	
-	\begin{lstlisting}[tabsize=2]
-	<terms>
-		<term>
-			...
-			<registrations>
-				<registration>
-					<admission>
-						<link href="http://.../admission/96858805" 
-						method="GET" rel="admission" />
-					</admission>
-					<term>
-						<link href="http://.../term
-						/dateOfTerm:2012-05-10T14:22:00/room:BS"
-							method="GET" rel="term" />
-					</term>
-				</registration>
-				...
-			</registrations>
-			...
-		</term>
-		...
-	</terms>
-	\end{lstlisting}
-	
-	This concept of HATEOAS is called aggregation. But it isn't everything. In a case that the server would return
-	thousands of term objects and each of them would contain thousands of registrations including admissions, the response
-	would be, again, very large. However, there is one even more interesting part of HATEOAS - the \uv{engine}.
-	
-	Core of the engine principle is not to return the whole set of object available, but just a subset of it and to
-	tell the client, where to find the rest:
-	
-	\begin{lstlisting}[tabsize=2]
-	<terms>
-		<count>5</count>
-		<totalCount>123</totalCount>
-		<link href="http://.../term?page=3&count=5" method="GET" 
-			rel="next" />
-		<link href="http://.../term?page=1&count=5" method="GET" 
-			rel="previous" />
-		<term>
-			...
-			<registrations>
-				<registration>
-					<admission>
-						<accepted>false</accepted>
-						<link href="http://.../admission/96858805" 
-							method="GET" rel="admission" />
-					</admission>
-					<term>
-						<link href="http://.../term
-						/dateOfTerm:2012-05-10T14:22:00/room:BS"
-							method="GET" rel="term" />
-					</term>
-				</registration>
-				...
-			</registrations>
-			...
-		</term>
-		...
-	</terms>
-	\end{lstlisting}
-	
-	This approach saves a lot of server resources and prevents client from unexpected delays due to large responses. Such
-	response should be always returned in constant time, because the request query defines its maximum size - number of
-	objects.
-	
-	\section{REST, Java and JAX-RS}\label{sec:jaxrs}
-	
-	\cite[p.~xiii]{restful} The \gls{JAXRS} is a new API that aims to make development of RESTful web services in Java
-	simple and intuitive. The initial impetus for the API came from the observation that existing Java Web APIs were
-	generally either:
-	\begin{itemize}
-	  \item Very low-level, leaving the developer to do a lot of repetitive and error-prone work such as URI parsing and
-	  content negotiation, or
-	  \item Rather high-level and proscriptive, making it easy to build services that conform to a particular pattern but
-	  lacking the necessary flexibility to tackle more general problems. 
+		\item \textbf{Long-running}
+		From start to finish, the process spans hours, days, weeks, months, or more.
+		\item \textbf{Persisted state}
+		Because the process is long-lived, its state is persisted to a database so that it outlasts the server hosting it.
+		\item \textbf{Bursty, sleeps most of the time}
+		The process spends most of its time asleep, waiting for the next triggering event to occur, at which point it wakes up
+		and performs a flurry of activities.
+		\item \textbf{Orchestration of system or human communications}
+		The process is responsible for managing and coordinating the communications of various system or human actors.
 	\end{itemize}
 
-	JAX-RS is one of the latest generations of Java APIs that make use of Java annotations to reduce the need for standard
-	base classes, implementing required interfaces, and out-of-band configuration files. Annotations are used to route
-	client requests to matching Java class methods and declaratively map request data to the parameters of those methods.
-	Annotations are also used to provide static metadata to create responses.
+	\section{BPM standards}
 	
-	JAX-RS also provides more traditional classes and interfaces for dynamic access to request data and for customizing
-	responses.
+	BPM is not that difficult. The business analyst designs the process, the process is run by an engine, and the engine
+	has EAI and human interaction capabilities. Questions appear when it comes to selection of a right solution, design and
+	modelling tools, runtime engine, \ldots
 	
-	This is a brief description of what JAX-RS is. Its usage and development approach will be demonstrated in following
-	parts of this master's thesis.
+	It is good to look for some well known and widely accepted approach. BPM does not lack standards. The adoption of
+	\gls{BPEL} and \gls{BPMN} is a recipe for success. According to \cite[Ch.~1.3.1]{bpm}, the important BPM standards are:
+	
+	\begin{itemize}
+		\item \gls{BPEL4WS}, sometimes shortened to \textbf{\gls{BPEL}}
+		
+		A BPEL process is a web service with an associated process definition defined in an XML-based language. The behavior
+		of a BPEL process is to act on, and be acted on by, other processes; put differently, a BPEL process can invoke
+		another web service or be invoked as a web service.
+	  	\item \textbf{\gls{BPML}}
+	  
+		From the \gls{BPMI} organization, which is an XML-based process definition language similar to BPEL. BPMN, another
+	  	specification from BPMI, is a sophisticated graphical notation language for processes. Significantly, the BPMN
+	  	specification includes a mapping to BPML-rival BPEL, which facilitates the execution of BPMN-designed processes on
+	  	BPEL engine.
+	  	\item \textbf{Web services choreography}
+	
+	  	Choreography describes, from a global point of view, how web services are arranged in a control view spanning
+	  	multiple participants. Choreography's global view is contrasted with the local view of process orchestration in
+	  	languages such as BPEL; a BPEL process is the process of a single participant, and a choreography is the interaction
+	  	model for a group of participants. \gls{WSCDL} is the W3C's recommended choreography standard.
+	
+	  	\item \gls{WfMC} has published a BPM reference model, as well as a set of interfaces for various parts of the BPM
+	  	architecture. Though WfMC does not specify a standard graphical process notation, it does provide an exportable XML
+	  	format called XML Process Definition Language (XPDL); processes built in an XPDL-compliant design tool can run on a
+	  	WfMC enactment engine.
+	  	
+	  	\item \textbf{\gls{OMG}} did not aim build a new process language or interface but abstract BPM models conforming to
+	  	its \gls{MDA}.
+	  	\item \textbf{\gls{BPSS}} from OASIS group
+
+	  	A choreography language, but is built for business-to-business collaborations. In a typical exchange between a buyer
+	  	and seller, for example, the buyer sends a request to the seller, to which the seller responds immediately with
+	  	consecutive acknowledgements of receipt and acceptance. When the seller has finished processing the request, it
+	  	sends an indication of this to the buyer, and the buyer in turn sends an acknowledgement of the indication to the
+	  	seller.
+	\end{itemize}
+	
+	From the above are only two standards worth considering. BPEL and BPMN, which I am going to describe in analytical part
+	of this work.
+
+	\section{Execution engine - jBPM}
+	
+	\cite{jbpm}
+	jBPM is a flexible \gls{BPM} Suite. It's light-weight, fully open-source (distributed under
+	Apache license) and written in Java. It allows to model, execute and monitor business processes, throughout their life
+	cycle.
+	
+	\begin{figure}[h]
+	  	\centering
+	    \includegraphics[width=12cm]{figures/jbpm_process.png}
+	  	\caption{Example jBPM process as shown in \cite{jbpm}}
+	\end{figure}
+	
+	A business process allows to model various business goals by describing the steps that need to be executed to achieve
+	that goal and the order, using a flow chart. This greatly improves the visibility and agility of a business logic.
+	jBPM focuses on executable business process, which are business processes that contain enough detail so they can
+	actually be executed on a BPM engine. Executable business processes bridge the gap between business users and
+	developers as they are higher-level and use domain-specific concepts that are understood by business users but can also
+	be executed directly.
+
+	The core of jBPM is a light-weight, extensible workflow engine written in pure Java that allows to execute business
+	processes using the latest \gls{BPMN} 2.0 specification. It can run in any Java environment, embedded in an application
+	or as a service.
+
+	BPM makes the bridge between business analysts, developers and end users, by offering process management features and
+	tools in a way that both business users and developers like it. Domain-specific nodes can be plugged into the palette,
+	making the processes more easily understood by business users.
+
+	jBPM supports adaptive and dynamic processes that require flexibility to model complex, real-life situations that
+	cannot easily be described using a rigid process. jBPM is also not just an isolated process engine. Complex business
+	logic can be modeled as a combination of business processes with business rules and complex event processing. jBPM can
+	be combined with the Drools project to support one unified environment that integrates these paradigms where business
+	logic can be modelled as a combination of processes, rules and events.
+
+	Apart from the core engine itself, there are a few optional components that can be used. Eclipse-based or web-based
+	business process designer and a management console for the execution engine.
+
+	\subsection{jBPM Core Engine}
+	
+	The core jBPM engine is the heart of the jBPM project. It's a light-weight workflow engine that executes business
+	processes.
+	It can be embedded as a part of an application or deployed as a service. It's most important features are:
+	
+	\begin{itemize}
+	  \item Solid, stable core engine for executing process instances
+	  \item Native support for the latest BPMN 2.0 specification for modeling and executing business processes
+	  \item Strong focus on performance and scalability
+	  \item Light-weight (can be deployed on almost any device that supports a simple Java Runtime Environment, does not
+	  require any web container at all)
+	  \item (Optional) pluggable persistence with a default JPA implementation
+	  \item Pluggable transaction support with a default JTA implementation
+	  \item Implemented as a generic process engine, so it can be extended to support new node types or other process
+	  languages
+	  \item Listeners to be notified of various events
+	  \item Ability to migrate running process instances to a new version of their process definition
+	\end{itemize}
+
+	The core engine can also be integrated with a few other (independent) core services:
+	
+	\begin{itemize}
+	  \item The human task service can be used to manage human tasks when human actors need to participate in the process.
+	  It is fully pluggable and the default implementation is based on the WS-HumanTask specification and manages the life
+	  cycle of the tasks, task lists, task forms and some more advanced features like escalation, delegation, rule-based
+	  assignments, etc.
+	  \item The history log can store all information about the execution of all the processes on the engine. This is
+	  necessary if access to historic information is needed as runtime persistence only stores the current state of all
+	  active process instances. The history log can be used to store all current and historic state of active and completed
+	  process instances.
+	  
+	  It can be used to query for any information related to the execution of process instances, for
+	  monitoring, analysis, etc.
+	\end{itemize}

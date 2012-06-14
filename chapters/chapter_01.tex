@@ -1,78 +1,380 @@
-\begin{introduction}
-	\section{Motivation and objectives}
+\chapter{RESTful API with JAX-RS}\label{rest}
 
-	Every year, hundreds of high school graduates apply for studies at Czech Technical University, Faculty of Informatics.
-	This raises certain requirements, including managing, storing, analysing and processing of all these applications.
-	Each application has its own life cycle, which begins with filling out an on-line form and continues through various
-	steps which an applicant has to pass. The life cycle ends when a decision of acceptance is delivered to the applicant
-	and he either enrolls in the studies or not.
+	Nowadays, Internet consumers demand fast growth of various services and integration of their favourite ones. As en
+	example I can point out synchronization of contact list between very popular social networks, e-mail providers and
+	phone contact lists. 
 	
-	We live in the world of new era of the Internet. Everything goes on-line, web and the latest trend - everything goes
-	mobile. People want things to happen very quickly. They want to access all the information fast, now.
-	
-	Students and applicants are no different. They expect from this prestigious University, especially from Faculty of
-	Informatics, the most modern and useful gadgets when it comes to software and web.
-	
-	\section{How do things work now}
-	
-	Currently all applications are processed rather manually. Many man days of administrative work are consumed during the
-	process. Although an electronic form is filled in and submitted by an applicant, the rest of actions almost exclusively
-	fall into the hands of Study Department staff. Some of the work is handled by simple scripts or other utilities. The
-	question is: Why don't we do most of the work automatically?
-	
-	This work is monotonous and can even lead to men's frustration.
-	
-	\section{What should be achieved - the goals}
-	
-	Courses at Faculty of Informatics teach its students to handle various programming languages, web technologies and
-	techniques.
-	We all know what to expect from a working web application and good looking one is a bonus. This is why knowledge of
-	faculty's students should be used for good of their successors. Fast, reliable, informative and functional system will
-	make them feel more comfortable and perhaps could even save some precious time.
-	
-	Ideal state would be to accept on-line applications and automatically generate invitations for applicants, that should
-	attend a test. After the test, process all results and generate a decision of acceptance letter for all who passed the
-	test or are accepted without it. The only manual interventions that will remain is to accept apology, appeal and insert
-	the letters into the envelopes.
+	Other example may be growing amount of \verb|mashups|\footnote{Applications that are created via
+	combination of multiple different services. Such application, almost exclusively web based, can be created very quickly
+	by consuming several \gls{API}s. Not necessarily from the same provider.} and uncountable number of
+	\verb|startups|\footnote{Constantly rising amount of web applications that focus on fast growth of attracted users.
+	They offer various services, which are often very innovative and experimental. One successful example is popular
+	social network and my favorite information channel - Twitter.}, who often provide RESTful or different type of public
+	\gls{API}.
 
-	Pragmatically, goals of this thesis could be summarized as follows:
+	\section{Talking about REST, what is it?}
+	
+	\gls{REST} or RESTful programming is not defined by any official standard and there are no official guidelines or rules
+	for it.
+	So what is it then? It is and architectural and programming style for Web, where a set of constraints is defined. Lots
+	of text has been written about it during past years and describing the whole idea of REST is out of scope of this
+	master's thesis. I can, however, try to point out the most significant and what I personally managed to adopt.
+	
+	\subsection{Main principles of REST, RESTful web service}
+	
+	There are several architectural principles that one should keep in mind when thinking of REST \cite[p.~3]{restful}:
 	
 	\begin{itemize}
-	  \item familiarise with RESTful best practices, patterns and anti-patterns
-	  \item familiarise with \gls{BPM} with main focus on jBPM
-	  \item implement RESTful \gls{API} (back-end) according to functionality requested by Android and Web UI teams
-	  \item implement admission processing using Java and jBPM processing machine
-	  \item explore new and modern Java (JEE) technologies
-	  \item follow modern development methodologies
-	  \item perform tests during and after development
-	  \item use exclusively Open Source software and tools
+	  	\item \textbf{Addressable resources} 
+	  	The key abstraction of information and data in REST is a resource, and each resource must be addressable via a
+	  	\gls{URI}.
+		\item \textbf{A uniform, constrained interface}
+		Use a small set of well-defined methods to manipulate your resources.
+		\item \textbf{Representation-oriented}
+		You interact with services using representations of that service. A resource referenced by one URI can have different
+		formats. Different platforms need different formats. For example, browsers need HTML, JavaScript needs JSON
+		(JavaScript Object Notation), and a Java application may need XML.
+		\item \textbf{Communicate statelessly}
+		Stateless applications are easier to scale.
+		\item \textbf{\gls{HATEOAS}}
+		Let your data formats drive state transitions in your applications.
 	\end{itemize}
 	
-	\section{Let's make things better}
+	\gls{HATEOAS} is often understood as a core principle of \gls{REST}. It carries an idea of resource representation via
+	links and stateless implementation of services.
 	
-	Taking the above written into account, this might be a good idea for a master's or bachelor's thesis. However if we
-	want to use all available technologies that have become popular in past years and automatize the majority of admission
-	processing, it turns out to be a very complex project. So why not to create several teams and split necessary work into
-	multiple, both bachelor's and master's, thesis?
+	RESTful web services are the result of applying these constraints to services that utilize web standards such as
+	\gls{URI}s, \gls{HTTP}, \gls{XML}, and \gls{JSON}.
 	
-	This is how project Přiříz was born. It includes web interface for both students and Study Department staff, native
-	Android application and RESTful \gls{API} with \gls{BPM} processing machine, which is the subject of my master's thesis.
+	\subsection{Back to the roots, HTTP is reborn}
 	
-	\section{Structure of this work}
+	\gls{SOA} has been in this world for a long time. Many different approaches and technologies exist to implement it.
+	From those worth to mention: DCE, CORBA, Java RMI, \ldots They offer robust standards, one can build large, complex
+	and scalable systems on top of it, but there is a cost. They often bring huge complexity and maintenance requirements
+	into place.
 	
-	Basically, I could divide my work into these main parts, which are then further split into chapters:
+	Currently, when one says \gls{SOA}, it often evokes \gls{SOAP} in a mind that spent several years using technologies
+	mentioned above. This, however, is not a bad thing. \gls{SOAP} is used very widely and is perfectly suitable for
+	developing services and \gls{API}s. But it is definitely not a lightweight technology and it is not ideal for
+	everything. Its most common use case is for server-server communication in enterprise systems.
+	
+	Nowadays, we need something quickly adoptable, widely spreadable, platform and technology independent and client
+	oriented. This needs a completely different approach and new way of thinking when it comes to \gls{SOA}. It is about
+	Web, so why not to start with something that is Web, as we see it today, based on? Yes, it is \gls{HTTP}.
+	
+	Although \gls{REST} is not protocol specific, when saying \gls{REST}, it usually automatically means \gls{REST} +
+	\gls{HTTP}. No wonder. \gls{HTTP} is perfectly suitable for client-server \gls{SOA}, it is just about the way of
+	thinking. It offers transport layer, request-response mechanism, descriptive responses, caching mechanism and many
+	more. It is true that in past years, when various types of web applications started to appear, many web developers
+	limited their thinking and use of \gls{HTTP} to two basic cases:
 	
 	\begin{itemize}
-	  \item Theoretical introduction is covered by chapters \ref{rest} and \ref{bpm}. Following parts will largely draw on
-	  the information contained here.
-	  \item Analytical part talks about architecture of the whole ecosystem with main focus on RESTful \gls{API}.
-	  Describes technologies used, methodologies applied and tools commonly used during development and testing phases.
-	  \item Implementation and unit testing
-	  \item Integration and regression testing
-	  \item Results and conclusion
+	  \item GET a page with \gls{URI}, perhaps containing a few query parameters
+	  \item POST a form
 	\end{itemize}
 	
-	Appendices at the end of the document are referred directly from the text within the chapters. Smaller figures, tables
-	or other objects are put directly into the content.
+	\begin{program}
+	\caption{HTTP GET request/response example of a standard web page}\label{http_get_web}
+	\begin{verbatim}
+	GET /index.html HTTP/1.1
+	User-Agent: curl/7.24.0 (i686-pc-cygwin) ...
+	Host: www.google.sk
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	Accept-Language: sk-sk,en;q=0.5
+
+	HTTP/1.1 200 OK
+	Date: Thu, 07 Jun 2012 11:25:15 GMT
+	Expires: -1
+	Cache-Control: private, max-age=0
+	Content-Type: text/html; charset=ISO-8859-2
+	Set-Cookie: ... expires= ...; path=/; domain=.google.sk
+	Set-Cookie: ... expires= ...; path=/; domain=.google.sk; HttpOnly
+	Server: gws
+	X-XSS-Protection: 1; mode=block
+	X-Frame-Options: SAMEORIGIN
+	Transfer-Encoding: chunked
+
+	<!doctype html><html ...><head> ... <body> ...
+	\end{verbatim}
+	\end{program}
+	
+	The example above \ref{http_get_web} shows most common HTTP request and response, when browsing the web via standard
+	web browser. It requests object \textbf{/index.html} using \textbf{GET} method placed on host \textbf{www.google.sk}.
+	My client also put several HTTP headers into the request:
+	
+	\begin{itemize}
+	  \item \textbf{Accept:} text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	  \item \textbf{Accept-Language:} sk-sk,en;q=0.5
+	\end{itemize}
+	
+	Also the request does not contain any request body, as it is GETting information from the server. 
+	
+	The response of the message received is 200, which means OK - success. An overview of all available HTTP response codes
+	can be found on-line at \cite{httpcodes}. \textbf{Content-type} header of the response message says that the body
+	received is of type HTML.
+	
+	RESTful web service needs more than that and luckily \gls{HTTP} offers much more. It will be better to point out its
+	features in a relationship to each of REST's architectural principles.
+	
+	\subsection{Addressable resources, URIs and links}
+	
+	Each \textbf{resource} in a system should be reachable through a \textbf{unique identifier}. When reflected to the idea
+	of REST and HTTP, URIs will automatically come to mind. The format of a URI looks like this \cite{uri}:
+	
+	\begin{verbatim}
+	<scheme>://<authority><path>?<query>
+	\end{verbatim}
+	
+	The above is a citation directly from RFC, but for purposes of this master's thesis should be rewritten into more
+	detailed form:
+	
+	\begin{verbatim}
+	<scheme>://<host>:<port>/<path>?<queryString>#<fragment>
+	\end{verbatim}
+	
+	Where in the RESTful world these parts usually mean:
+	\begin{itemize}
+	  \item \textbf{scheme} typically \textbf{http} or \textbf{https}
+	  \item \textbf{host} aka server name, e.g. \textbf{fit.cvut.cz} and \textbf{port}
+	  \item \textbf{path} to the resource on server, e.g. \textbf{/admission/123-456-01}
+	  \item \textbf{queryString} after the \textbf{?} is typically used for a set of resources and can be a page number,
+	  number of items in the set, or a filter definition and many more, e.g. \textbf{?page=1\&limit=10}
+	  \item \textbf{fragment} after the \textbf{\#} usually points to a certain place in a document
+	\end{itemize}
+	
+	An example of such URI pointing to a set of resources may be:
+	
+	\begin{verbatim}
+	http://pririz.is.fit.cvut.cz:9090/admission/services/admission
+		?page=2&count=20
+	\end{verbatim}
 	 
-\end{introduction}
+	An example of URI pointing to a concrete single resource:
+	
+	\begin{verbatim}
+	http://pririz.is.fit.cvut.cz:9090/admission/services/admission
+	/123-456-01
+	\end{verbatim}
+	
+	Characters allowed in \gls{URI} string are all alphanumeric, comma, dash, asterisk and underscore. Space is converted
+	into plus and other characters are encoded using specific schema into a two digit hexadecimal number, which is appended
+	to the \% character.
+	
+	\subsection{The uniform, constrained interface, HTTP methods}
+	
+	This is probably the prettiest part of a relationship between REST and HTTP. It may be a bit difficult to adopt this
+	principle for a person, who spent a couple of years developing CORBA or SOAP services.  There is a finite set of HTTP
+	methods and all REST operations have to stick to it. All other parameters describing operations must be omitted from
+	\gls{URI}.
+
+	Let's see what \gls{HTTP} offers:
+	
+	\begin{table}[h]\centering
+	 	\begin{minipage}{12.9cm}
+		\begin{tabular}{l|c|c|p{6cm}}
+		\hline
+		Method & \verb|Idempotent|\footnote{Idempotent means that no matter how many times you apply the operation, 
+		the result is always the same.} & \verb|Safe|\footnote{Safe means that invoking an operation does not change the 
+		state of the server at all. This means that, other than request load, the operation will not affect the server.} 
+		& Operation(s)\\
+		\hline
+		GET & yes & yes & read - query information from a server\\
+		POST & no & no & write, update - both can change a server state in a unique way each time executed\\
+		PUT & yes & no & update for the known resource, updating the same resource more than once does not effect it\\
+		DELETE & yes & no & delete - removes resource\\
+		HEAD & yes & yes & read without response body, returns only response headers\\
+		OPTIONS & yes & yes & information about communication options with server\\
+		\end{tabular}
+	    \renewcommand{\footnoterule}{}
+	    \end{minipage}
+	\caption{An overview of HTTP methods and their roles in a RESTful service}
+	\label{http_methods}
+	\end{table}
+	
+	HTTP contains a few other methods (TRACE, CONNECT), which are unimportant for purposes of RESTful services.
+	
+	What is more interesting, nowadays a couple of non-HTTP methods have appeared, which may be good for RESTful service
+	design in the future. Namely PATCH (very similar to the PATCH method found in \verb|WebDAV|\footnote{WebDAV stands for
+	Web-based Distributed Authoring and Versioning. It is a set of extensions to the HTTP protocol which allows users to 
+	collaboratively edit and manage files on remote web servers.}) and MERGE. According to various sources I have found on
+	the web, namely \cite{httppatch}, \cite{msdnpatchmerge} or \cite{rfc2616}, they may appear in further HTTP
+	specifications. They are not a part of current HTTP 1.1.
+	
+	PATCH and MERGE are used for partial update of known resources that contain large amount of data and updating the whole
+	object would be a lengthy and ineffective operation. This, however, can be simulated using POST and specifying a
+	detailed path of the resource via URI.
+	
+	\subsection{Representation-oriented}
+	
+	I already described that each resource has its own URI and client-server principle using HTTP. Its methods allow the
+	client to receive current representation via GET method, remove it from server via DELETE or change the representation
+	via POST and PUT methods. Concrete representation can be received in JSON, XML, YAML or any other format one can
+	imagine.
+	
+	Representation format is agreed between client and server in a RESTful system interaction. HTTP offers such feature
+	by specifying \textbf{Content-Type} header. Its value string is represented by \gls{MIME} format:
+	
+	\begin{verbatim}
+	<type>/<subtype>[;name=value;name=value...]
+	\end{verbatim}
+	
+	An example may be:
+	
+	\begin{verbatim}
+	text/html; charset=utf-8
+	text/xml
+	text/json
+	application/xml
+	application/json
+	\end{verbatim}
+	
+	To choose preferred format(s), client can specify \textbf{Accept} HTTP header in a request. Now it becomes more clear
+	how REST and HTTP perfectly fit each other. Together they offer addressability, method choice and object representation
+	format.
+	
+	\subsection{Communicate statelessly, (no)sessions}
+	
+	HTTP offers powerful client session management, which is commonly used when browsing the web via traditional web
+	browser. It stores so called \textbf{Cookies} when a server asks for it in response headers, which are then sent back
+	to the server with subsequent requests. This is how the server handles stateful interaction with the client over HTTP.
+	
+	Stateless communication in REST means that there is no client session data stored on a server. In other words, none of
+	the above is performed. It does not mean that RESTful application cannot be stateful, though.
+	
+	Reason for this is simplicity, which further leads to easily scalable RESTful service. It is generally much less
+	difficult to build a cluster of stateless applications than to handle session replication and possibly another service
+	layer.
+	
+	\subsection{HATEOAS}
+	
+	\cite[p.~11]{restful} Hypermedia is a document-centric approach with the added support for embedding links to other
+	services and information within that document format.
+	
+	There are several ways how to understand and apply this RESTful architectural principle. One use case is to add
+	hyperlinks when composing complex and large objects. This avoids unexpected server load, delay in response to the
+	client and helps to reference dependent or embedded objects without bloating the response.
+	
+	An example of server response without any hyperlinks:
+	
+	\begin{lstlisting}[tabsize=2]
+	<terms>
+		<term>
+			...
+			<registrations>
+				<registration>
+					<admission>
+						<code>96858805</code>
+						<type>P</type>
+						<accepted>false</accepted>
+						... some huge object containing 
+						a lot of information
+					</admission>
+					<term>
+						<dateOfTerm>2012-05-10...</dateOfTerm>
+						<room>BS</room>
+						<capacity>1500</capacity>
+						<registerFrom>2012-05-03...</registerFrom>
+						<registerTo>2012-05-08...</registerTo>
+						<apologyTo>2012-05-08...</apologyTo>
+						... another huge object containing 
+						a lot of information, graph can be even circular
+					</term>
+				</registration>
+				...
+			</registrations>
+			...
+		</term>
+		...
+	</terms>
+	\end{lstlisting}
+	
+	Let's apply embedded hyperlinks on the document above:
+	
+	\begin{lstlisting}[tabsize=2]
+	<terms>
+		<term>
+			...
+			<registrations>
+				<registration>
+					<admission>
+						<link href="http://.../admission/96858805" 
+						method="GET" rel="admission" />
+					</admission>
+					<term>
+						<link href="http://.../term
+						/dateOfTerm:2012-05-10T14:22:00/room:BS"
+							method="GET" rel="term" />
+					</term>
+				</registration>
+				...
+			</registrations>
+			...
+		</term>
+		...
+	</terms>
+	\end{lstlisting}
+	
+	This concept of HATEOAS is called aggregation. But it isn't everything. In a case that the server would return
+	thousands of term objects and each of them would contain thousands of registrations including admissions, the response
+	would be, again, very large. However, there is one even more interesting part of HATEOAS - the \uv{engine}.
+	
+	Core of the engine principle is not to return the whole set of object available, but just a subset of it and to
+	tell the client, where to find the rest:
+	
+	\begin{lstlisting}[tabsize=2]
+	<terms>
+		<count>5</count>
+		<totalCount>123</totalCount>
+		<link href="http://.../term?page=3&count=5" method="GET" 
+			rel="next" />
+		<link href="http://.../term?page=1&count=5" method="GET" 
+			rel="previous" />
+		<term>
+			...
+			<registrations>
+				<registration>
+					<admission>
+						<accepted>false</accepted>
+						<link href="http://.../admission/96858805" 
+							method="GET" rel="admission" />
+					</admission>
+					<term>
+						<link href="http://.../term
+						/dateOfTerm:2012-05-10T14:22:00/room:BS"
+							method="GET" rel="term" />
+					</term>
+				</registration>
+				...
+			</registrations>
+			...
+		</term>
+		...
+	</terms>
+	\end{lstlisting}
+	
+	This approach saves a lot of server resources and prevents client from unexpected delays due to large responses. Such
+	response should be always returned in constant time, because the request query defines its maximum size - number of
+	objects.
+	
+	\section{REST, Java and JAX-RS}\label{sec:jaxrs}
+	
+	\cite[p.~xiii]{restful} The \gls{JAXRS} is a new API that aims to make development of RESTful web services in Java
+	simple and intuitive. The initial impetus for the API came from the observation that existing Java Web APIs were
+	generally either:
+	\begin{itemize}
+	  \item Very low-level, leaving the developer to do a lot of repetitive and error-prone work such as URI parsing and
+	  content negotiation, or
+	  \item Rather high-level and proscriptive, making it easy to build services that conform to a particular pattern but
+	  lacking the necessary flexibility to tackle more general problems. 
+	\end{itemize}
+
+	JAX-RS is one of the latest generations of Java APIs that make use of Java annotations to reduce the need for standard
+	base classes, implementing required interfaces, and out-of-band configuration files. Annotations are used to route
+	client requests to matching Java class methods and declaratively map request data to the parameters of those methods.
+	Annotations are also used to provide static metadata to create responses.
+	
+	JAX-RS also provides more traditional classes and interfaces for dynamic access to request data and for customizing
+	responses.
+	
+	This is a brief description of what JAX-RS is. Its usage and development approach will be demonstrated in following
+	parts of this master's thesis.
