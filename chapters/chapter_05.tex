@@ -59,7 +59,235 @@
 		\item append all the above concatenated with \textbf{/bin} to the \textbf{PATH} variable 
 	\end{itemize}
 	
+	After all these steps are done, nothing should stand in the way anymore and development can start straight ahead.
+	
 	\subsection{Configuring the new project}
+	
+	RESTful API is using Maven and Spring Roo, which play very nicely together. I could either use basic Maven's
+	\verb|archetype|\footnote{A template used by Maven to create a new project.} and configure the project for Spring Roo
+	or let it create standard Spring Roo project and tweak it, as I do not want a standard web project, but Spring Roo
+	without Spring MVC's View integrated with Apache CXF.
+	
+	In the end, I decided to combine both approaches. Because basic Maven project is nothing else but a standard directory
+	structure with JEE web application and Maven configuration files, this gives me a clean start. On the other hand,
+	Spring Roo will create a sample web project (also Maven project), from which I will simply take what I need in my clean
+	Maven project to make it play with Spring Roo.
+	
+	Let's create basic Maven project first via Eclipse IDE - no archetype:
+	
+	\begin{verbatim}
+		.
+	|-- pom.xml
+	|-- src
+	|   |-- main
+	|   |   |-- java
+	|   |   `-- resources
+	|   `-- test
+	|       |-- java
+	|       `-- resources
+	`-- target
+	    |-- classes
+	    |   `-- META-INF
+	    |       `-- MANIFEST.MF
+	    `-- test-classes
+	
+	11 directories, 2 files
+	\end{verbatim}
+	
+	Explanation of the above follows:
+	
+	\begin{itemize}
+		\item \textbf{pom.xml} 
+		
+		Maven's configuration file for this project. Contains project's metadata (name, description, identification, \ldots)
+		and what is important - dependencies, plugins, reports and their various settings.
+		\item \textbf{src/main/java}
+		
+		Standard place for Java source code.
+		\item \textbf{src/main/resources}
+		
+		A place for various resources like metadata, configuration files, \ldots This directory will be in classpath at
+		runtime.
+		\item \textbf{src/test/java}
+		
+		Standard place for test Java source code. Unit and integration tests are placed here.
+		\item \textbf{src/test/resources}
+		
+		Its role is the same as of \textbf{src/main/resources} directory, but this one is in classpath only during test
+		phase.
+		\item \textbf{target}
+		
+		Build directory and temporary directory. This is where all Maven outputs including deployable archive or report
+		results are written. During the development process can be simply ignored.
+	\end{itemize}
+	
+	How different from basic Maven project Spring Roo's project is? Let's create it by using Roo Shell take a look:
+	
+	\begin{verbatim}
+	$ mkdir MI-MPR-DIP-Admission-Roo
+	$ cd MI-MPR-DIP-Admission-Roo
+	$ roo.sh
+	    ____  ____  ____
+	   / __ \/ __ \/ __ \
+	  / /_/ / / / / / / /
+	 / _, _/ /_/ / /_/ /
+	/_/ |_|\____/\____/    1.2.1.RELEASE [rev 6eae723]
+	
+	
+	Welcome to Spring Roo. For assistance press TAB or
+	type "hint" then hit ENTER.
+	roo> project --topLevelPackage cz.cvut.fit.mi_mpr_dip.admission
+	Created ROOT\pom.xml
+	Created SRC_MAIN_RESOURCES
+	Created SRC_MAIN_RESOURCES\log4j.properties
+	Created SPRING_CONFIG_ROOT
+	Created SPRING_CONFIG_ROOT\applicationContext.xml
+	roo>
+	\end{verbatim}
+	
+	Which will create a new Roo project with this structure:
+	
+	\begin{verbatim}
+		.
+	|-- log.roo
+	|-- pom.xml
+	`-- src
+	    `-- main
+	        `-- resources
+	            |-- META-INF
+	            |   `-- spring
+	            |       `-- applicationContext.xml
+	            `-- log4j.properties
+	
+	5 directories, 4 files
+	\end{verbatim}
+	
+	It created basic Maven project structure, with basic Spring context setup, \verb|log4j|\footnote{Very popular and
+	still widely used logging library, but there are already better implementations available. Log4j is quite an old
+	library, development is discontinued and using facade SLF4J with Logback as an implementation is a standard nowadays.
+	This is why I am going to replace it in RESTful API.} configuration and pom.xml contains all necessary dependencies.
+	
+	Let's use some more of Roo's features:
+	
+	\begin{verbatim}
+	roo> jpa setup --provider HIBERNATE \
+	--database HYPERSONIC_IN_MEMORY
+	Created SPRING_CONFIG_ROOT\database.properties
+	Updated SPRING_CONFIG_ROOT\applicationContext.xml
+	Created SRC_MAIN_RESOURCES\META-INF\persistence.xml
+	Updated ROOT\pom.xml
+	...
+	roo>
+	\end{verbatim}
+	
+	The above just added persistence capabilities to the project via JPA. I know that root if the entire RESTful API is an
+	admission, which will also serve as a key domain object - a Person is 1:1 related to the Admission. Thus I will create
+	Admission domain object via Roo Shell:
+	
+	\begin{verbatim}
+	roo> entity jpa --class ~.domain.Admission --testAutomatically
+	Created SRC_MAIN_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain
+	Created SRC_MAIN_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\Admission.java
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\AdmissionDataOnDemand.java
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\AdmissionIntegrationTest.java
+	Created SRC_MAIN_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\Admission_Roo_Configurable.aj
+	Created SRC_MAIN_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\Admission_Roo_Jpa_Entity.aj
+	Created SRC_MAIN_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\Admission_Roo_Jpa_ActiveRecord.aj
+	Created SRC_MAIN_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\Admission_Roo_ToString.aj
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\AdmissionDataOnDemand_Roo_Configurable.aj
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\AdmissionDataOnDemand_Roo_DataOnDemand.aj
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\AdmissionIntegrationTest_Roo_Configurable.aj
+	Created SRC_TEST_JAVA\cz\cvut\fit\mi_mpr_dip\admission
+	\domain\AdmissionIntegrationTest_Roo_IntegrationTest.aj
+	~.domain.Admission roo>
+	\end{verbatim}
+	
+	Argument \textbf{--testAutomatically} tells Roo Shell to generate Unit and Integration tests too. And so it did:
+	
+	\begin{verbatim}
+		.
+	|-- log.roo
+	|-- pom.xml
+	|-- src
+	|   |-- main
+	|   |   |-- java
+	|   |   | `-- cz
+	|   |   |  `-- cvut
+	|   |   |   `-- fit
+	|   |   |    `-- mi_mpr_dip
+	|   |   |     `-- admission
+	|   |   |      `-- domain
+	|   |   |       |-- Admission.java
+	|   |   |       |-- Admission_Roo_Configurable.aj
+	|   |   |       |-- Admission_Roo_Jpa_ActiveRecord.aj
+	|   |   |       |-- Admission_Roo_Jpa_Entity.aj
+	|   |   |       `-- Admission_Roo_ToString.aj
+	|   |   `-- resources
+	|   |       |-- META-INF
+	|   |       |   |-- persistence.xml
+	|   |       |   `-- spring
+	|   |       |       |-- applicationContext.xml
+	|   |       |       `-- database.properties
+	|   |       `-- log4j.properties
+	|   `-- test
+	|    `-- java
+	|     `-- cz
+	|      `-- cvut
+	|       `-- fit
+	|        `-- mi_mpr_dip
+	|         `-- admission
+	|          `-- domain
+	|           |-- AdmissionDataOnDemand.java
+	|           |-- AdmissionDataOnDemand_Roo_Configurable.aj
+	|           |-- AdmissionDataOnDemand_Roo_DataOnDemand.aj
+	|           |-- AdmissionIntegrationTest.java
+	|           |-- AdmissionIntegrationTest_Roo_Configurable.aj
+	|           `-- AdmissionIntegrationTest_Roo_IntegrationTest.aj
+	`-- target
+	...
+	\end{verbatim}
+	
+	\begin{verbatim}
+	
+	Let's use Maven to run the tests now:
+	
+	roo> perform test
+	-------------------------------------------------------
+	 T E S T S
+	-------------------------------------------------------
+	roo>
+	Results :
+	roo>
+	Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+	roo>
+	[INFO] ------------------------------------------------
+	[INFO] BUILD SUCCESS
+	[INFO] ------------------------------------------------
+	[INFO] Total time: 2:04.484s
+	[INFO] Finished at: Thu Jun 14 18:23:38 CEST 2012
+	[INFO] Final Memory: 6M/23M
+	[INFO] ------------------------------------------------
+	roo>
+	\end{verbatim}
+	
+	I can see that Roo has created 9 Unit and Integration tests (via JUnit) for a single domain model. The report says that
+	all 9 tests passed.
+	
+	This is just an example of how to work with Roo and Roo Shell. It really saves a lot of work and lots of typing. In
+	following sections of this chapter I am going to describe RESTful API's design and the final structure of project.
 	
 	\section{Application architecture and layers}
 	
