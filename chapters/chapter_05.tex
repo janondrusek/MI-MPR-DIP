@@ -260,10 +260,9 @@
 	...
 	\end{verbatim}
 	
-	\begin{verbatim}
-	
 	Let's use Maven to run the tests now:
 	
+	\begin{verbatim}
 	roo> perform test
 	-------------------------------------------------------
 	 T E S T S
@@ -290,6 +289,161 @@
 	following sections of this chapter I am going to describe RESTful API's design and the final structure of project.
 	
 	\section{Application architecture and layers}
+	
+	What I wanted to avoid in RESTful API is to use Spring MVC and Web MVC, because they are targeted for a traditional web
+	application. Each web application after its deployment and server start should be able to tell if it is running and
+	everything looks normal. For API like applications it becomes a bit difficult, as it does not contain anything like a
+	home page. 
+	
+	This is why I decided to add something home page like just to be able to tell if RESTful API is healthy at
+	any time - so called \verb|Smoke test|\footnote{Usually a first test made after system restart, re-deployment or any
+	other action that might require further testing. Smoke test is then used to tell if system does not crash
+	immediately.} resource. Smoke test can be done by simply opening RESTful API static resource as a web page in a
+	browser. For this and only this purpose Spring MVC is used in RESTful API. 
+	
+	This requirement leads to dual servlet configuration. One for pure Spring MVC and the other for Apache CXF. Of course,
+	both will be Spring context aware, as I want it to manage my application.
+	
+	The final project structure, which grew quite a lot, follows:
+	
+	\begin{verbatim}
+		.
+	|-- pom.xml
+	|-- src
+	|   |-- main
+	|   |   |-- java
+	|   |   |   |-- cz
+	|   |   |   |   `-- cvut
+	|   |   |   |       `-- fit
+	|   |   |   |           `-- mi_mpr_dip
+	|   |   |   |               `-- admission
+	|   |   |   |                   |-- adapter
+	|   |   |   |                   |-- authentication
+	|   |   |   |                   |-- builder
+	|   |   |   |                   |-- comparator
+	|   |   |   |                   |-- controller
+	|   |   |   |                   |-- dao
+	|   |   |   |                   |-- domain
+	|   |   |   |                   |-- endpoint
+	|   |   |   |                   |   |-- helper
+	|   |   |   |                   |   `-- mapper
+	|   |   |   |                   |-- exception
+	|   |   |   |                   |-- jbpm
+	|   |   |   |                   |   `-- eval
+	|   |   |   |                   |-- service
+	|   |   |   |                   |   |-- auth
+	|   |   |   |                   |   |-- deduplication
+	|   |   |   |                   |   |-- initializing
+	|   |   |   |                   |   |-- logging
+	|   |   |   |                   |   |-- mail
+	|   |   |   |                   |   `-- user
+	|   |   |   |                   |-- util
+	|   |   |   |                   |-- validation
+	|   |   |   |                   `-- web
+	|   |   |   `-- org
+	|   |   |       `-- springframework
+	|   |   |-- resources
+	|   |   |   |-- META-INF
+	|   |   |   |   |-- deployment.prod.properties
+	|   |   |   |   |-- deployment.properties
+	|   |   |   |   |-- jbpm-process.properties
+	|   |   |   |   |-- persistence.xml
+	|   |   |   |   |-- security.properties
+	|   |   |   |   |-- spring
+	|   |   |   |   |   |-- applicationContext.xml
+	                    ...
+	|   |   |   |-- bpm
+	|   |   |   |-- bsp
+	|   |   |   |-- msp
+	|   |   |   `-- process
+	|   |   `-- webapp
+	|   |       |-- WEB-INF
+	|   |       |   |-- admin-servlet.xml
+	|   |       |   |-- cxf-servlet.xml
+	|   |       |   |-- freemarker
+	|   |       |   `-- web.xml
+	|   |       `-- error
+	|   `-- test
+	|       |-- java
+	|       |   `-- cz
+	|       |       `-- cvut
+	|       |           `-- fit
+	|       |               `-- mi_mpr_dip
+	|       |                   `-- admission
+	|       `-- resources
+	|           |-- META-INF
+	|           `-- test
+	
+	98 directories, 877 files
+	\end{verbatim}
+	
+	I left out unimportant verbose information, like \textbf{.java} and \textbf{\.aj} files, subdirectories, \ldots Each
+	web application deployed to a servlet container starts looking for a \verb|web.xml|\footnote{The web.xml file provides
+	configuration and deployment information for the Web components that comprise a Web application. The Java Servlet 2.5
+	specification defines the web.xml deployment descriptor file in terms of an XML schema document.} file. Description of
+	RESTful API's layers should therefore start here.
+	
+	To enable Spring Application Context and to tell Spring that I want it to manage my I need to add a context parameter
+	and a listener:
+	
+	\lstset{language=XML}
+	\begin{lstlisting}[tabsize=2]
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:META-INF/spring/applicationContext.xml
+		</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	\end{lstlisting}
+	
+	This is what actually Spring Roo generated project does by default when one creates a web project via its Shell, which
+	was not my case.
+	
+	The next step is to define two new servlets and configure them. In \textbf{web.xml} file:
+	
+	\begin{lstlisting}[tabsize=2]
+	<servlet>
+		<servlet-name>cxf</servlet-name>
+		<servlet-class>
+			org.apache.cxf.transport.servlet.CXFServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cxf</servlet-name>
+		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>admin</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>admin</servlet-name>
+		<url-pattern>/admin/*</url-pattern>
+	</servlet-mapping>
+	\end{lstlisting}
+	
+	This means that Spring MVC servlet is mapped to \textbf{/admin/*} URI pattern and CXF to \textbf{/services/*} pattern.
+	The rest of the URI path is managed by annotation in MVC's Controller annotated POJOs or by CXF managed POJOs -
+	mappers. In RESTful API named \textbf{endpoints} and \textbf{error mappers}.
+	
+	\begin{figure}[h]
+	  	\centering
+	    \includegraphics[width=12cm]{figures/restful_api_architecture.png}
+	  	\caption{RESTful API internal architecture}
+	\end{figure}
+	
+	\section{Security}	
 	
 	\section{Test Driven Development}
 	
