@@ -304,7 +304,82 @@
 	This requirement leads to dual servlet configuration. One for pure Spring MVC and the other for Apache CXF. Of course,
 	both will be Spring context aware, as I want it to manage my application.
 	
-	The final project structure, which grew quite a lot, follows:
+	Each web application deployed to a servlet container starts looking for a \verb|web.xml|\footnote{The web.xml file
+	provides configuration and deployment information for the Web components that comprise a Web application. The Java
+	Servlet 2.5 specification defines the web.xml deployment descriptor file in terms of an XML schema document.} file.
+	Description of RESTful API's layers should therefore start here.
+	
+	To enable Spring Application Context and to tell Spring that I want it to manage my I need to add a context parameter
+	and a listener:
+	
+	\lstset{language=XML}
+	\begin{lstlisting}[tabsize=2]
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:META-INF/spring/applicationContext.xml
+		</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	\end{lstlisting}
+	
+	This is what actually Spring Roo generated project does by default when one creates a web project via its Shell, which
+	was not my case.
+	
+	The next step is to define two new servlets and configure them. In \textbf{web.xml} file:
+	
+	\begin{lstlisting}[tabsize=2]
+	<servlet>
+		<servlet-name>cxf</servlet-name>
+		<servlet-class>
+			org.apache.cxf.transport.servlet.CXFServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cxf</servlet-name>
+		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>admin</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>admin</servlet-name>
+		<url-pattern>/admin/*</url-pattern>
+	</servlet-mapping>
+	\end{lstlisting}
+	
+	This means that Spring MVC servlet is mapped to \textbf{/admin/*} URI pattern and CXF to \textbf{/services/*} pattern.
+	The rest of the URI path is managed by annotation in MVC's Controller annotated POJOs or by CXF managed POJOs -
+	mappers. In RESTful API named \textbf{endpoints} and \textbf{error mappers}.
+	
+	For each servlet, corresponding configuration file needs to be added to context path. In this case:
+	
+	\begin{itemize}
+		\item src/main/webapp/WEB-INF/\textbf{admin-servlet.xml}
+		
+		Defines URL mapping and View Resolver. Everything routes to a single \textbf{AdminController} annotated with
+		\textbf{@Controller} annotation. FreeMarker templates are used, and so \textbf{FreeMarkerViewResolver} must be
+		configured. It looks for \textbf{.ftl} templates in src/main/webapp/\textbf{WEB-INF/freemarker/} directory.
+		\item src/main/webapp/WEB-INF/\textbf{cxf-servlet.xml}
+		
+		Enables Spring annotations, sets up JAX-RS REST server, its listeners (endpoints and error mappers) and content
+		providers (XML is enabled by default via JAX-RS annotations, JSON has some specific properties and so it as to be
+		explicitly configured).
+	\end{itemize}
+	
+	After adding all necessary configuration files and refactoring the default Spring Roo's structure, the project looks
+	like this:
 	
 	\begin{verbatim}
 		.
@@ -377,65 +452,35 @@
 	98 directories, 877 files
 	\end{verbatim}
 	
-	I left out unimportant verbose information, like \textbf{.java} and \textbf{\.aj} files, subdirectories, \ldots Each
-	web application deployed to a servlet container starts looking for a \verb|web.xml|\footnote{The web.xml file provides
-	configuration and deployment information for the Web components that comprise a Web application. The Java Servlet 2.5
-	specification defines the web.xml deployment descriptor file in terms of an XML schema document.} file. Description of
-	RESTful API's layers should therefore start here.
+	The above is final RESTful API's structure. I left out unimportant verbose information, like \textbf{.java} and
+	\textbf{.aj} files, subdirectories, \ldots 
 	
-	To enable Spring Application Context and to tell Spring that I want it to manage my I need to add a context parameter
-	and a listener:
+	Basically, \textbf{src/main/webapp} directory is added, which contains web application configuration files. Spring
+	context configuration is split into multiple files, where the original \textbf{applicationContext.xml} server just as a
+	parent and imports child configurations.
 	
-	\lstset{language=XML}
-	\begin{lstlisting}[tabsize=2]
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
-			classpath:META-INF/spring/applicationContext.xml
-		</param-value>
-	</context-param>
-
-	<listener>
-		<listener-class>
-			org.springframework.web.context.ContextLoaderListener
-		</listener-class>
-	</listener>
-	\end{lstlisting}
+	Log4j has been completely removed and excpluded in \textbf{pom.xml} from all dependencies. SLF4j with Logback replaced
+	it.
 	
-	This is what actually Spring Roo generated project does by default when one creates a web project via its Shell, which
-	was not my case.
+	\textbf{src/main/resources/META-INF} contains several \textbf{.properties} files:
 	
-	The next step is to define two new servlets and configure them. In \textbf{web.xml} file:
+	\begin{itemize}
+		\item \textbf{deployment.properties} for development and \textbf{deployment.prod.properties} for production
+		
+		General application properties including database configuration, services properties, \ldots
+		\item \textbf{jbpm-process.properties}
+		
+		jBPM context properties.
+		\item \textbf{security.properties}
+		
+		Security deserves its own configuration file as it is quite complicated in this application. This, however, is just
+		for readability.
+	\end{itemize}
 	
-	\begin{lstlisting}[tabsize=2]
-	<servlet>
-		<servlet-name>cxf</servlet-name>
-		<servlet-class>
-			org.apache.cxf.transport.servlet.CXFServlet
-		</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>cxf</servlet-name>
-		<url-pattern>/services/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>admin</servlet-name>
-		<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
-		</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>admin</servlet-name>
-		<url-pattern>/admin/*</url-pattern>
-	</servlet-mapping>
-	\end{lstlisting}
+	They serve as placeholders for for Spring context, where each variable marked as \textbf{\$\{key\}} is replaced during
+	Spring initialization by value found in either of listed property files.
 	
-	This means that Spring MVC servlet is mapped to \textbf{/admin/*} URI pattern and CXF to \textbf{/services/*} pattern.
-	The rest of the URI path is managed by annotation in MVC's Controller annotated POJOs or by CXF managed POJOs -
-	mappers. In RESTful API named \textbf{endpoints} and \textbf{error mappers}.
+	Interesting is to see how application layers are situated and how they communicate with each other:
 	
 	\begin{figure}[h]
 	  	\centering
