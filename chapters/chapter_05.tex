@@ -456,8 +456,8 @@
 	\textbf{.aj} files, subdirectories, \ldots 
 	
 	Basically, \textbf{src/main/webapp} directory is added, which contains web application configuration files. Spring
-	context configuration is split into multiple files, where the original \textbf{applicationContext.xml} server just as a
-	parent and imports child configurations.
+	context configuration is split into multiple files, where the original \textbf{applicationContext.xml} server is just
+	as a parent and imports child configurations.
 	
 	Log4j has been completely removed and excpluded in \textbf{pom.xml} from all dependencies. SLF4j with Logback replaced
 	it.
@@ -465,7 +465,8 @@
 	\textbf{src/main/resources/META-INF} contains several \textbf{.properties} files:
 	
 	\begin{itemize}
-		\item \textbf{deployment.properties} for development and \textbf{deployment.prod.properties} for production
+		\item \textbf{deployment.properties} for development
+		\item \textbf{deployment.prod.properties} for production
 		
 		General application properties including database configuration, services properties, \ldots
 		\item \textbf{jbpm-process.properties}
@@ -473,8 +474,8 @@
 		jBPM context properties.
 		\item \textbf{security.properties}
 		
-		Security deserves its own configuration file as it is quite complicated in this application. This, however, is just
-		for readability.
+		Contains \textbf{Roles} and \textbf{Permissions} definition. RESTful API's security is explained in
+		\ref{sec:security}.
 	\end{itemize}
 	
 	They serve as placeholders for for Spring context, where each variable marked as \textbf{\$\{key\}} is replaced during
@@ -488,7 +489,118 @@
 	  	\caption{RESTful API internal architecture}
 	\end{figure}
 	
-	\section{Security}	
+	Having two different servlets defined does not mean that RESTful API has duplicities. It was necessary to enable
+	various capabilities and each required different approach. Both are then allowed to use the same application layers -
+	Model in MVC pattern.
+	
+	\section{Security}\label{sec:security}
+	
+	RESTful API is tightly coupled with Spring ecosystem in general and heavily uses its features. Often even extends its
+	implementations with custom ones. Spring framework is nicely modular and Maven enables to add only those dependencies
+	that are really needed. Spring Security library is one of them.
+	
+	It is an authentication and access-control framework, which became standard for securing Spring-based applications.
+	Enabling Spring Security for Spring application is just a matter of adding a simple filter definition to a
+	\textbf{web.xml} descriptor file:
+	
+	\begin{lstlisting}[tabsize=2]
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>
+			org.springframework.web.filter.DelegatingFilterProxy
+		</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	\end{lstlisting}
+	
+	\subsection{Authentication}
+	
+	Further configuration of Spring Security is exclusively defined via Spring context configuration. In RESTful API a file
+	found in META-INF/spring/\textbf{spring-security.xml}. Each CXF endpoint has a \textbf{filter chain} defined. Such
+	definition example may be:
+	
+	\begin{lstlisting}[tabsize=2]
+	<bean id="springSecurityFilterChain" 
+			class="org.springframework.security.web.FilterChainProxy">
+		<constructor-arg>
+			<list>
+				<security:filter-chain pattern="/services/user/identity"
+					filters="sessionAuthenticationFilter,\
+					basicAuthenticationFilter,anonymousAuthFilter,\
+					exceptionTranslationFilter" />
+				<security:filter-chain pattern="/services/admission"
+					filters="sessionAuthenticationFilter,\
+					anonymousAuthFilter,exceptionTranslationFilter" />
+			</list>
+		</constructor-arg>
+	</bean>
+	\end{lstlisting}
+	
+	The above shows two different filter chains that can be found in RESTful API. The first one is used in only one case -
+	a UserIdentity was requested via credentials: 
+	
+	\begin{itemize}
+		\item\label{itm:sessionAuthenticationFilter} \textbf{sessionAuthenticationFilter}
+
+		RESTful API's custom authentication filter. It looks for \textbf{X-CTU-FIT-Admission-Session} HTTP request header,
+		where a \textbf{session identifier} from \textbf{/user/identity} RESTful API's call is provided. This carries
+		information about \textbf{UserIdentity}, its \textbf{Roles}, session validity, \ldots 
+		\item \textbf{basicAuthenticationFilter}
+		
+		Default Basic HTTP Authentication implementation from Spring Security. Verifies \textbf{username} and
+		\textbf{password} against Faculty's \gls{LDAP} for employees or RESTful API's database for imported
+		\textbf{Admissions}. During the import, \textbf{UserIdentity} is created for each \textbf{Admission}.
+		\item\label{itm:anonymousAuthFilter} \textbf{anonymousAuthFilter}
+		
+		A fallback filter, which sets \textbf{Anonymous Identity} into Security Context, when no \textbf{Identity} has been
+		set by previous members of the filter chain.
+		\item\label{itm:exceptionTranslationFilter} \textbf{exceptionTranslationFilter}
+		
+		Translates an Exception thrown during security filter chain processing into HTTP response if possible. 
+	\end{itemize}
+	
+	The later one is a standard security filter chain used for every other use case in RESTful API:
+	
+	\begin{itemize}
+		\item \textbf{sessionAuthenticationFilter}
+		\item \textbf{anonymousAuthFilter}
+		\item \textbf{exceptionTranslationFilter}
+	\end{itemize}
+	
+	Basically, it is missing \textbf{basicAuthenticationFilter} and therefore it requires RESTful API's session identifier
+	to successfully authenticate \textbf{UserIdentity}.
+	
+	\subsection{Authorization}
+	
+	To be authenticated is not enough to use any of RESTful API's endpoints. Successful authentication prevents one from
+	receiving 401 HTTP response. Each endpoint's call requires a specific \textbf{Permission}. Relationship between
+	\textbf{Role} and \textbf{Permission} is M:N. Relationship between \textbf{Role} and \textbf{UserIdentity} is M:N.
+	
+	Without necessary \textbf{Roles}, authenticated \textbf{UserIdentity} lacks \textbf{Permissions} and such call
+	will be rejected with HTTP 403 response.
+	
+	Endpoint's implementation methods are annotated with \textbf{@Secured} annotations, where required \textbf{Permissions}
+	are specified:
+	
+	\lstset{language=Java}
+	\begin{lstlisting}[tabsize=2]
+	@Secured("PERM_WRITE_ADMISSION")
+	@Consumes({ MediaType.APPLICATION_JSON,
+			MediaType.APPLICATION_XML })
+	@POST
+	@Override
+	public Response addAdmission(Admission admission) {
+		validateAndDeduplicateAndStore(admission);
+		return Response.created(...).build();
+	}
+	\end{lstlisting}
+	
+	The example above shows the \textbf{/admission} POST method. It is able to consume both, JSON and XML request body,
+	expects \textbf{Admission} serialized object in it and requires the \textbf{PERM\_WRITE\_ADMISSION}
+	\textbf{Permission}.
 	
 	\section{Test Driven Development}
 	
