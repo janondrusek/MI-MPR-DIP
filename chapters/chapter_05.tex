@@ -602,7 +602,58 @@
 	expects \textbf{Admission} serialized object in it and requires the \textbf{PERM\_WRITE\_ADMISSION}
 	\textbf{Permission}.
 	
-	\section{Test Driven Development}
+	\section{jBPM}
+	
+	Modelling, processes, trigger action.
+	
+	\section{\gls{TDD}}
+	
+	\cite{msdntdd}
+	TDD is an advanced technique of using automated unit tests to drive the design of software
+	and force decoupling of dependencies. The result of using this practice is a comprehensive suite of unit tests that can
+	be run at any time to provide feedback that the software is still working. This technique is heavily emphasized by
+	those using Agile development methodologies.
+	
+	These steps should be followed when doing TDD right:
+	
+	\begin{itemize}
+		\item Understand the requirements of the story, work item, or feature that you are working on
+		\item \textbf{Red} Create a test and make it fail
+		\begin{itemize}
+			\item Imagine how the new code should be called and write the test as if the code already existed.
+			\item Create the new production code stub. Write just enough code so that it compiles.
+			\item Run the test. It should fail. This is a calibration measure to ensure that your test is calling the correct
+			code and that the code is not working by accident. This is a meaningful failure, and you expect it to fail.
+		\end{itemize}
+		\item \textbf{Green} Make the test pass by any means necessary
+		\begin{itemize}
+			\item Write the production code to make the test pass. Keep it simple.
+			\item Some advocate the hard-coding of the expected return value first to verify that the test correctly detects
+			success. This varies from practitioner to practitioner.
+			\item If you've written the code so that the test passes as intended, you are finished. You do not have to write more
+			code speculatively. The test is the objective definition of \uv{done.} The phrase \gls{YAGNI} is often used to veto
+			unnecessary work. If new functionality is still needed, then another test is needed. Make this one test pass and
+			continue.
+			\item When the test passes, you might want to run all tests up to this point to build confidence that everything else
+			is still working.
+		\end{itemize}
+		\item \textbf{Refactor} Change the code to remove duplication in your project and to improve the design while ensuring
+		that all tests still pass
+		\begin{itemize}
+			\item Remove duplication caused by the addition of the new functionality.
+			\item Make design changes to improve the overall solution.
+			\item After each refactoring, rerun all the tests to ensure that they all still pass.
+		\end{itemize}
+		\item Repeat the cycle. Each cycle should be very short, and a typical hour should contain many Red/Green/Refactor
+		cycles
+	\end{itemize}
+	
+	Personally I adapted to work like this very quickly. It however has a drawback. One usually has to write 2 and more
+	times more code than he would without testing. Each refactoring, that does not involve method renaming and extraction
+	only, requires even more effort to update unit tests. This is why I used this approach only to test it within RESTful
+	API, when developing import of admissions.
+	
+	Due to lack of time I continued without implementing unit tests any further.
 	
 	\section{Build, Deploy}
 	
