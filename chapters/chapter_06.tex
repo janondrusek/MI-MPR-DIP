@@ -1,6 +1,14 @@
 \chapter{Testing}\label{cha:testing}
 
 	\section{Unit Testing}
+	
+	\cite{msdnunit}
+	The primary goal of unit testing is to take the smallest piece of testable software in the application, isolate it from
+	the remainder of the code, and determine whether it behaves exactly as expected. Each unit is tested separately
+	before integrating them into modules to test the interfaces between modules.
+	
+	In other words, unit tests test class by class, method by method. If a tested class or method has a dependency, the
+	dependency has to be stubbed, mocked, faked, dummied or spied. The five just named together form a set of test doubles.
 
 	\subsection{\gls{TDD}}
 	
@@ -60,9 +68,55 @@
 	100\% code coverage by unit tests, both line and branch.
 	
 	Another very helpful tool and Maven plugin is Findbugs. It compares the source code with a database of known best
-	practicies and warns the developer, if there are some places that need fixing or attention.
+	practices and warns the developer, if there are some places that need fixing or attention.
 
 	\section{Integration Testing}
+	
+	\cite{msdnintegration}
+	Integration testing is a logical extension of unit testing. In its simplest form, two units that have already been
+	tested are combined into a component and the interface between them is tested. A component, in this sense, refers to an
+	integrated aggregate of more than one unit. In a realistic scenario, many units are combined into components, which are
+	in turn aggregated into even larger parts of the program. The idea is to test combinations of pieces and eventually
+	expand the process to test your modules with those of other groups. Eventually all the modules making up a process are
+	tested together. Beyond that, if the program is composed of more than one process, they should be tested in pairs
+	rather than all at once.
+
+	Integration testing identifies problems that occur when units are combined. By using a test plan that requires you to
+	test each unit and ensure the viability of each before combining units, you know that any errors discovered when
+	combining units are likely related to the interface between units. This method reduces the number of possibilities to a
+	far simpler level of analysis.
+	
+	\subsection{Arquillian}
+	
+	It is a testing platform for the JVM that enables developers to easily create automated integration, functional and
+	acceptance tests for Java middleware.
+	
+	Arquillian handles all the plumbing of container management, deployment and framework initialization. Moreover it
+	covers all aspects of test execution, which entails:
+
+	\begin{itemize}
+		\item Managing the lifecycle of the container
+		\item Bundling the test case, dependent classes and resources into a ShrinkWrap archive
+		\item Deploying the archive to the container
+		\item Enriching the test case by providing dependency injection and other declarative services
+		\item Executing the tests inside the container
+		\item Capturing the results and returning them to the test runner for reporting
+		\item Integrates with familiar testing frameworks (e.g., JUnit, TestNG), allowing tests to be launched using existing
+		IDE, Ant and Maven test plugins
+	\end{itemize}
+	
+	RESTful API uses integration tests from two sources:
+	
+	\begin{itemize}
+		\item Spring Roo generated for JPA Entities
+		
+		Each domain model is tested via Spring Roo unit and integration tests.
+		\item handcrafted via Arquillian
+		
+		Again, due to lack of time, I just wanted to test it by myself and to demonstrate, how such tests should look like.
+		This is why only a few integration tests can be found in RESTful API. They do not cover all endpoint and cover only
+		positive flow.
+	\end{itemize} 
 
 	\section{Regression Testing}
 
