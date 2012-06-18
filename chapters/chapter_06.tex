@@ -63,9 +63,9 @@
 	Frameworks that help to make unit testing a joy are e.g. JUnit and TestNG.
 	
 	There are several ways how to verify that production code is covered by unit tests. Very helpful tools, which are
-	also available as Maven report plugins, are Cobertura, EMMA or JMockit code coverage. My personal experience is that
-	this metrics should become a standard, when developing an important project. Therefore they should be set to
-	100\% code coverage by unit tests, both line and branch.
+	also available as Maven report plugins, are Cobertura, EMMA or JMockit code coverage. If one is willing to pay for a
+	commercial solution, Clover may be worth looking. These metrics should become a standard, when developing an important
+	project. Therefore they should be set to 100\% code coverage by unit tests, both line and branch.
 	
 	Another very helpful tool and Maven plugin is Findbugs. It compares the source code with a database of known best
 	practices and warns the developer, if there are some places that need fixing or attention.
@@ -119,5 +119,59 @@
 	\end{itemize} 
 
 	\section{Regression Testing}
+	
+	Regression testing means testing, that the software did not stop working. In other words: functionality that was
+	working yesterday, is still working today.
+	
+	\cite{msdnregression}
+	Any time implementation within a program is modified, regression testing should be done. It usually means rerunning
+	existing tests against the modified code to determine whether the changes break anything that worked prior to the
+	change and by writing new tests where necessary. Adequate coverage without wasting time should be a primary
+	consideration when conducting regression tests.
+	
+	Some strategies and factors to consider during this process include the following:
+	
+	\begin{itemize}
+		\item Test fixed bugs promptly. The programmer might have handled the symptoms but not have gotten to the underlying
+		cause.
+		\item Watch for side effects of fixes. The bug itself might be fixed but the fix might create other bugs.
+		\item Write a regression test for each bug fixed.
+		\item If two or more tests are similar, determine which is less effective and get rid of it.
+		\item Identify tests that the program consistently passes and archive them.
+		\item Focus on functional issues, not those related to design.
+		\item Make changes (small and large) to data and find any resulting corruption.
+		\item Trace the effects of the changes on program memory.
+	\end{itemize}
+	
+	\subsection{How to perform Regression Testing}
+	
+	First thing that should be kept in mind is that regression should test the whole application in an environment similar
+	to production. This is why it should be properly deployed and running.
+	
+	The only change between test and production environment should be testing data and testing without any other system
+	dependencies. E.g. if a middleware is tested, it should be running in standalone mode - I do not want to test third
+	party's application. This can influence two sides of the application. Input (North) or Backend interaction (South) or
+	both.
+	
+	What does this mean for RESTful API? Because it is directly consumed by clients I do not need to care about the
+	Northern part. Tests will just act like clients. More interesting is the Southern part. RESTful API communicates with
+	Faculty's LDAP server and mail server. During Regression Testing none of them should be contacted.
+	
+	Each RESTful API's service that has a possibility to interact with a backend contains an adapter implementation.
+	Adapter is a \gls{DI}, which is injected during server startup and its implementation is configurable via
+	\textbf{deployment.properties} file:
+	
+	\begin{verbatim}
+	# DUMMY | PROD
+	adapter.ldap=DUMMY
+	adapter.pwd=PROD
+	# DUMMY | UUID
+	generator.string=UUID
+	# EMAIL
+	# true | false
+	mail.disable=false
+	\end{verbatim}
 
 	\section{Performance Testing}
+	
+	\section{Acceptance Testing}
