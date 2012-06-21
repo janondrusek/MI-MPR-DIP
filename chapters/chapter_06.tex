@@ -220,10 +220,19 @@
 		two endpoints. Should again verify that RESTful API does not slow down due to high data load.
 		\item \textbf{Casual use}
 		
-		Test should simulate standard behavior of Web UI interface. Focus on Registrations, session creation, Admission read,
-		\ldots This is where the original NF07 is applicable and result of this scenario should reflect it in results.
+		Test should simulate standard behavior of Web UI interface with focus on Registrations, session creation, Admission
+		read, \ldots This is where the original NF07 is applicable and result of this scenario should reflect it in results.
 	\end{itemize}
 	
 	\subsection{User Acceptance Testing}
 	
-	All systems together.
+	This is a special case of Verification testing, when application is working exactly like in production environment, put
+	together with Northern and Southern dependencies.
+	
+	The only difference when compared to real production use is that non-production data should be provided as an input
+	during the test. Typically test users and some randomly generated data.
+	
+	For such scenario a small subset of Regression test pack can be selected, built on top of Sunny day scenarios.
+	UAT should run very quickly. A common approach for RESTful API might be that each endpoint is hit with a single Sunny
+	day request. Regression Test pack could be reused again or a quick automatic or manual test via Web UI is applicable
+	too.
