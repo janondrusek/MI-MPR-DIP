@@ -118,10 +118,18 @@
 		positive flow.
 	\end{itemize} 
 
-	\section{Regression Testing}
+	\section{Acceptance Testing}
 	
-	Regression testing means testing, that the software did not stop working. In other words: functionality that was
-	working yesterday, is still working today.
+	A common form of acceptance testing consists of tests that exercise a consumer scenario. These tests emulate the
+	application interface interactions. Important forms of acceptance testing follow.
+	
+	\subsection{Verification and Regression Testing}
+	
+	Verification testing is a regular check of application functionality. It is done from a perspective of a consumer. For
+	RESTful API this means the client.
+	
+	Regression testing means testing that the software did not stop working. In other words: functionality that was
+	working yesterday, is still working today. This can be understood as a set of Verification tests collected over time.
 	
 	\cite{msdnregression}
 	Any time implementation within a program is modified, regression testing should be done. It usually means rerunning
@@ -145,8 +153,8 @@
 	
 	\subsection{How to perform Regression Testing}
 	
-	First thing that should be kept in mind is that regression should test the whole application in an environment similar
-	to production. This is why it should be properly deployed and running.
+	First thing that should be kept in mind is that verification or regression should test the whole application in an
+	environment similar to production. This is why it should be properly deployed and running.
 	
 	The only change between test and production environment should be testing data and testing without any other system
 	dependencies. E.g. if a middleware is tested, it should be running in standalone mode - I do not want to test third
@@ -155,9 +163,9 @@
 	
 	What does this mean for RESTful API? Because it is directly consumed by clients I do not need to care about the
 	Northern part. Tests will just act like clients. More interesting is the Southern part. RESTful API communicates with
-	Faculty's LDAP server and mail server. During Regression Testing none of them should be contacted.
+	Faculty's LDAP server and mail server. During Verification or Regression testing none of them should be contacted.
 	
-	Each RESTful API's service that has a possibility to interact with a backend contains an adapter implementation.
+	Each RESTful API's service, that has a possibility to interact with a backend, contains an adapter implementation.
 	Adapter is a \gls{DI}, which is injected during server startup and its implementation is configurable via
 	\textbf{deployment.properties} file:
 	
@@ -171,7 +179,51 @@
 	# true | false
 	mail.disable=false
 	\end{verbatim}
-
-	\section{Performance Testing}
 	
-	\section{Acceptance Testing}
+	A test suite for RESTful API is available. However, only for a couple of calls, again, due to lack of time.
+	\verb|Apache Jmeter|\footnote{\cite{jmeter} The Apache JMeter\textsuperscript{\texttrademark} desktop application is open
+	source software, a 100\% pure Java application designed to load test functional behavior and measure performance. It was
+	originally designed for testing Web Applications but has since expanded to other test functions.} has been used for
+	this purpose. The \textbf{.jmx} testing project is available as a part of RESTful API's source code
+	\textbf{jmeter/regression\_tests.jmx}.
+	
+	\subsection{Performance Testing}
+	
+	\ref{itm:NF07}~NF07 talks about number of total and concurrent users that RESTful API should be able to handle. To
+	verify such requirement, performance test is a right thing to be used.
+	
+	Performance test should, exactly as Verification or Regression tests, probe the application in an environment similar
+	to production.
+	It strictly focuses on application that the test scope is about. This means, there should be no delays due to backend
+	communication, e-mail sending or similar action. The goal is to go through all the application layers from the top to
+	the bottom and back: request - processing - response.
+	
+	Luckily, this is exactly what my regression test suite does. An exception might be a fact that
+	\verb|Rainy day|\footnote{Non standard sequence of actions. Errors, exceptions, and less typical usage paths}
+	scenarios are left out from performance test suite. Simply because they usually do not use all application layers and the request is usually refused during validation. This would give me distorted results and also would make error rate
+	detection difficult under high load.
+	
+	Basically, performance test suite is a subset of regression test pack, where only positive
+	\verb|Sunny day|\footnote{The typical sequence of actions and system responses} scenarios are included.
+	
+	RESTful API should be performance tested in three scenarios:
+	
+	\begin{itemize}
+		\item \textbf{Admissions import}
+		
+		This is one time task, which imports large number of new data through a single RESTful API call. The performance test
+		should verify that RESTful API does not slow down during the import - each Admission should be processed in constant
+		time.
+		\item \textbf{Entrance exam}
+		
+		Short term status, when large number of Admission results are put through RESTful API with many photos. Basically hits
+		two endpoints. Should again verify that RESTful API does not slow down due to high data load.
+		\item \textbf{Casual use}
+		
+		Test should simulate standard behavior of Web UI interface. Focus on Registrations, session creation, Admission read,
+		\ldots This is where the original NF07 is applicable and result of this scenario should reflect it in results.
+	\end{itemize}
+	
+	\subsection{User Acceptance Testing}
+	
+	All systems together.
