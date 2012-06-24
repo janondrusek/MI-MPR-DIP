@@ -41,7 +41,7 @@
 \chapterstyle{veelo}
 
 \RequirePackage{babel}[2008/07/06]
-\RequirePackage{hyperref}
+\RequirePackage[colorlinks=true]{hyperref}
 
 \RequirePackage{chngcntr}
 \counterwithout*{footnote}{chapter}

@@ -604,8 +604,35 @@
 	
 	\section{jBPM}
 	
-	Modelling, processes, trigger action.
+	jBPM processing machine luckily integrates with Spring quite well. In RESTful API is configured directly via Spring
+	Context and its configuration is stored in \textbf{src/main/resources/META-INF/spring/jbpm.xml}.
 	
-	\section{Build, Deploy}
+	Admission business processes and its Use Cases can be simply modelled in BPMN 2.0 using a graphic tool. JBoss Community
+	offers such application as Eclipse IDE plugin. All \textbf{.bpmn} processes in RESTful API have been created this way.
+	
+	\newpage
+	\begin{figure}[h]
+		\label{fig:eclipse_drools}
+	  	\centering
+	    \includegraphics[width=12cm]{figures/eclipse_drools}
+	  	\caption{Eclipse Drools BPMN 2.0}
+	\end{figure}
+	
+	It is needed to differentiate between \textbf{bachelor's} and \textbf{master's} Admission processes. These are further
+	split into smaller parts like registration, apology, enrollment, \ldots - also BPMN 2.0 processes. Their \textbf{.bpmn}
+	representations are located in \textbf{src/main/resources/bsp} respectively \textbf{src/main/resources/msp}
+	directories. Common processes are then stored in \textbf{src/main/resources/process} project directory. Their graphical
+	forms can be found in Appendices section \ref{app:jbpm}.
+	
+	Each RESTful API call, which has some impact on Admission process should invoke appropriate task in jBPM runtime
+	engine. Such action is allowed by using Spring managed \textbf{@Service} annotated implementations from
+	\textbf{cz.cvut.fit.mi\_mpr\_dip.admission.jbpm} package. After RESTful API's Service and DAO layers finish their job,
+	Admission is then further passed to jBPM runtime engine for evaluation. This guarantees correct state in Admission
+	process.
+	
+	In Admission object representation, which RESTful API provides to its consumers, a state is represented by
+	AdmissionState object. Modification of the state is jBPM runtime engine's responsibility. Further it handles a few
+	other tasks including notification via e-mail and writing an information about changes made to the Admission object in
+	logs.
 	
 	\section{Profiling, Logging}
