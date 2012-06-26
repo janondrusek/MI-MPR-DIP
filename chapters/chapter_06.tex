@@ -225,6 +225,33 @@
 		read, \ldots This is where the original NF07 is applicable and result of this scenario should reflect it in results.
 	\end{itemize}
 	
+	Admissions import and Entrance exam scenarios have practically been tested during the development phase, when Web UI
+	and Android teams tested their applications against RESTful API. No issues have been discovered.
+	
+	More important is to test, if the application can handle number of concurrent users described in NF07. No server errors
+	should appear in logs and because performance test \textbf{.jmx} suite contains Sunny day scenarios only, no business
+	errors should appear either. Well this is not completely true. Because there is only a single User Identity used for
+	all operations, concurrent access will mess up session removal. For this and only this single case 401 and 404 HTTP
+	error responses are not considered to be an error.
+	
+	Number of total users is not that interesting, because it is then just a matter of time to process them.
+	
+	\subsubsection{Infrastructure}
+	
+	When load testing an application a separate environment should be set up for application being tested and load
+	injecting application. Luckily \gls{FIT} has good and quite powerful infrastructure available, and so RESTful API runs
+	on its own virtual machine, which provides:
+	
+	% TODO
+	\begin{itemize}
+		\item AMD quad core CPU @ 2.0GHz
+		\item 6GB RAM
+	\end{itemize}
+	
+	\subsubsection{Scenarios and results}
+	
+	% TODO
+	
 	\subsection{User Acceptance Testing}
 	
 	This is a special case of Verification testing, when application is working exactly like in production environment, put
