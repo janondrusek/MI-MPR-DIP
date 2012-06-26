@@ -28,11 +28,12 @@
 
 	\begin{itemize}
 		\item Windows 7 64bit
-		\item Java 7 runtime (Oracle's JDK 1.7.0\_01)
-		\item Java 6 compile (due to Spring Roo, however, 1.7 became supported by the time of writing this work)
+		\item Java 7 runtime (Oracle's JDK 1.7.0\_05)
+		\item Java 6 compile (due to Spring Roo, however, 1.7 became supported by the time of writing this work and so I
+		upgraded it during performance testing)
 		\item Maven 3.0.3
 		\item Cygwin 1.7.10 with Bash as a primary shell in Console2
-		\item Spring Roo 1.2.0, upgraded to 1.2.1, planned 1.2.2 upgrade with Java 1.7 support
+		\item Spring Roo 1.2.0, upgraded to 1.2.1, finally 1.2.2 with Java 1.7 support
 		\item Eclipse IDE, 3.7.2 Indigo
 		\begin{itemize}
 			\item Spring STS
@@ -635,4 +636,174 @@
 	other tasks including notification via e-mail and writing an information about changes made to the Admission object in
 	logs.
 	
+	\section{Error handling}
+	
+	JAX-RS itself defines error mapping interfaces and a framework for capturing exceptional states. Apache CXF, used as
+	implementation of JAX-RS in RESTful API, handles several common errors such as authentication, authorization and bad
+	request body format. Returns appropriate response, when error mapper is registered. CXF servlet has to be configured to
+	do so:
+	
+	\lstset{language=XML}
+	\begin{lstlisting}[tabsize=2]
+	<jaxrs:server id="restContainer" address="/">
+		...
+		<jaxrs:providers>
+			...
+			<ref bean="accessDeniedExceptionMapper" />
+			<ref bean="businessExceptionMapper" />
+			<ref bean="technicalExceptionMapper" />
+			<ref bean="jaxbExceptionMapper" />
+			<ref bean="webApplicationExceptionMapper" />
+			<ref bean="throwableExceptionMapper" />
+		</jaxrs:providers>
+	</jaxrs:server>
+	\end{lstlisting}
+	
+	All \textbf{ExceptionMapper} Spring managed beans are implementations of
+	\textbf{javax.ws.rs.ext.ExceptionMapper\textless{E}\textgreater} interface, where \textbf{E} is a subclass of
+	\textbf{java.lang.Throwable} being captured by this Exception Mapper.
+	Besides special types of Exceptions defined by various frameworks:
+	
+	\begin{itemize}
+		\item \textbf{AccessDeniedException}
+		
+		Typically produces HTTP 401 or 403 response
+		\item \textbf{JaxbException}
+		
+		Produces HTTP 400 response
+		\item \textbf{WebApplicationException}
+		
+		Various 4xx and in some special cases 5xx HTTP response
+	\end{itemize}
+	
+	RESTful API defines three \uv{levels} of custom Exceptions, which are either thrown by Validation layer or some library
+	used by RESTful API:
+	
+	\begin{itemize}
+		\item \textbf{BusinessException}
+		
+		Exclusively thrown in Validation layer. This means an error on Client side. Request constrains are violated, Client
+		is not authorized, \ldots Produces 4xx HTTP response and results in \verb|OK|\footnote{RESTful API did not produce
+		any errors on server side. Client has supplied invalid request and typically by fixing problem on his side, request
+		can be accepted and could result in 2xx or 3xx HTTP response.} RESTful API status.
+		\item \textbf{TechnicalException}
+		
+		A known and recognized Exception, which is usually a wrapper for the original Exception thrown by a backend or
+		database. In this case a Client cannot fix the problem on his side, but he can retry later - a cause of the problem
+		is shown in the response message. Usually returns HTTP 500 response.
+		\item \textbf{Throwable}
+		
+		An unexpected and unknown error. Most probably indicates a bug in RESTful API. Results in HTTP error 500 without
+		further description as it may put some Java specific information into the message.
+		
+		Both TechnicalException and Throwable cause \verb|ERROR|\footnote{An error has occurred on Server side and Client
+		cannot fix it by changing his request. ERROR status forces RESTful API's Logging service to be more verbose than OK
+		status. It writes full Exception chain stack trace into server log with ERROR priority.} RESTful API response status.
+	\end{itemize}
+	
+	A standardized Error Response body is used for all Exceptional states of RESTful API:
+	
+	\begin{lstlisting}[tabsize=2]
+	<errorResponse>
+		<message>Access is denied</message>
+		<internalRequestId>
+			33d91c25-9d42-4291-9af7-a387dbb49ffe
+		</internalRequestId>
+	</errorResponse>
+	\end{lstlisting}
+	
+	From which:
+	
+	\begin{itemize}
+		\item \textbf{message}
+		
+		Should tell the Client what happened, if possible.
+		\item \textbf{internalRequestId} 
+		
+		A value generated for each RESTful API request and is its unique identifier, which is further appended to each row in
+		the server log and so progress can be easily traced in it.
+		Non ERROR responses contain this value in HTTP response headers.
+	\end{itemize}
+	
 	\section{Profiling, Logging}
+
+	An important part of business logic of each application should be its ability to inform system administrator, operation
+	or even developer, what is happening and in a case of failure, why it was not able to process the task.
+	
+	RESTful API does not have many possibilities to choose from. Writing a system log seems to be a simple and usable
+	approach.
+	
+	As I already mentioned, SLF4j logging API and Logback as its implementation is used. To utilize their capabilities,
+	RESTful API defines and implements \textbf{LoggingService} interface. This service contains:
+	
+	\begin{itemize}
+		\item \textbf{logRequest(BufferedRequestWrapper httpRequest)}
+		
+		All information from HTTP request including headers
+		\item \textbf{logRequestBody(BufferedRequestWrapper httpRequest)}
+		
+		Copies HTTP request body InputStream and sends to Logger
+		\item \textbf{logResponse(BufferedResponseWrapper httpResponse)}
+		
+		All information from HTTP response including headers and \textbf{status} - OK, request processing duration, HTTP
+		response code
+		\item \textbf{logResponseBody(BufferedResponseWrapper httpResponse)}
+		
+		Copies HTTP response body OutputStream and sends to Logger
+		\item \textbf{logErrorResponse(BusinessException exception)}
+		
+		The same as \textbf{logResponse}
+		\item \textbf{logErrorResponse(TechnicalException exception)}
+		
+		The same as \textbf{logResponse}, but the \textbf{status} is ERROR and Exception's stack trace is sent to the Logger
+		\item \textbf{logErrorResponse(Throwable throwable, Integer httpResponseCode)}
+		
+		The same as logErrorResponse(TechnicalException exception), but \textbf{UnexpectedError} message is put into the
+		response body
+	\end{itemize}
+
+	LoggingService methods are executed from \textbf{LoggingFilter}, which is an implementation of a standard
+	\textbf{javax.servlet.Filter}. A single exception is executing \textbf{logErrorResponse} methods, which are invoked
+	from JAX-RS Exception Mappers.
+	
+	To put it all together one example RESTful API successful call results in these log entries:
+	
+	\begin{verbatim}
+	12-06-26 11:14:19.618 INFO  991a0741-d86b-4334-8134-876c5ad25967 
+	admission-request 
+	call-identifier=/admission/services/user/identity_GET 
+	Connection=keep-alive Authorization=Basic_bGVzczpsZXNz== 
+	Accept=application/xml User-Agent=Java/1.7.0_05 
+	Host=localhost:9090 query=null
+	12-06-26 11:14:19.633 INFO  991a0741-d86b-4334-8134-876c5ad25967 
+	admission-request-body
+	12-06-26 11:14:19.846 INFO  991a0741-d86b-4334-8134-876c5ad25967 
+	c.c.f.m.a.a.UserIdentityAuthenticationProvider 
+	Found authenticationService 
+	[c.c.f.m.a.s.a.LdapAuthenticationService] for authentication 
+	[LDAP]
+	12-06-26 11:14:19.846 INFO  991a0741-d86b-4334-8134-876c5ad25967 
+	c.c.f.m.a.a.UserIdentityAuthenticationProvider 
+	Successfuly authentified [less]
+	12-06-26 11:14:20.638 INFO  991a0741-d86b-4334-8134-876c5ad25967 
+	admission-response 
+	call-identifier=/admission/services/user/identity_GET code=200 
+	duration=1024 status=OK
+	12-06-26 11:14:20.638 INFO  991a0741-d86b-4334-8134-876c5ad25967 
+	admission-response-body <?xml version="1.0" ...
+	\end{verbatim}
+	
+	Each log entry contains a timestamp, \textbf{internalRequestId}, Logger name (admission-request,
+	admission-request-body, \ldots) followed by information being logged, which can contain more parts separated by a
+	single white space.
+	
+	It is a custom that application server with JEE application deployed is \uv{hidden} behind AJP or HTTP proxy, e.g.
+	Apache httpd or nginx. These applications also provide some logging and profiling functionality, but to enable RESTful
+	API's profiling capabilities, \textbf{duration} in ms is also sent to Logger.
+	
+	Logback is further configurable and allows many different log formats, outputs, log rotating etc. File log appender is
+	used in production environment. Console output is configured for development.
+	
+	One important information is that the entire logging and file writing process is asynchronous and so it does not block
+	RESTful API from completing its primary task. This is why under a high load with many concurrent users log entries
+	might appear in different order than expected. However, it is very common in all enterprise production environments.
