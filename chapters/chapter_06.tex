@@ -63,8 +63,9 @@
 	Frameworks that help to make unit testing a joy are e.g. JUnit and TestNG.
 	
 	There are several ways how to verify that production code is covered by unit tests. Very helpful tools, which are
-	also available as Maven report plugins, are Cobertura, EMMA or JMockit code coverage. If one is willing to pay for a
-	commercial solution, Clover may be worth looking. These metrics should become a standard, when developing an important
+	also available as Maven report plugins, are Cobertura, JaCoCo (continuation of EMMA as a forked project) or JMockit
+	code coverage.
+	If one is willing to pay for a commercial solution, Clover may be worth looking. These metrics should become a standard, when developing an important
 	project. Therefore they should be set to 100\% code coverage by unit tests, both line and branch.
 	
 	Another very helpful tool and Maven plugin is Findbugs. It compares the source code with a database of known best
@@ -105,18 +106,11 @@
 		IDE, Ant and Maven test plugins
 	\end{itemize}
 	
-	RESTful API uses integration tests from two sources:
+	RESTful API uses Spring Roo generated integration tests all for JPA Entities. Each domain model is tested via Spring
+	Roo unit and integration tests.
 	
-	\begin{itemize}
-		\item Spring Roo generated for JPA Entities
-		
-		Each domain model is tested via Spring Roo unit and integration tests.
-		\item handcrafted via Arquillian
-		
-		Again, due to lack of time, I just wanted to test it by myself and to demonstrate, how such tests should look like.
-		This is why only a few integration tests can be found in RESTful API. They do not cover all endpoints and cover only
-		positive flow.
-	\end{itemize} 
+	Due to lack of time I did not implement any integration tests using Arquillian, but if RESTful API should be further
+	developed, this is a good framework to work with. 
 
 	\section{Acceptance Testing}
 	
@@ -180,10 +174,10 @@
 	mail.disable=false
 	\end{verbatim}
 	
-	A test suite for RESTful API is available. However, only for a couple of calls, again, due to lack of time.
-	\verb|Apache Jmeter|\footnote{\cite{jmeter} The Apache JMeter\textsuperscript{\texttrademark} desktop application is open
-	source software, a 100\% pure Java application designed to load test functional behavior and measure performance. It was
-	originally designed for testing Web Applications but has since expanded to other test functions.} has been used for
+	A test suite for RESTful API is available. It is split into Regression pack and Load testing pack. The first one
+	contains multiple test scenarios, which were collected during the development. They verify RESTful API in a matter of
+	its basic functionality. \verb|Apache Jmeter|\footnote{\cite{jmeter} The Apache JMeter\textsuperscript{\texttrademark}
+	desktop application is open source software, a 100\% pure Java application designed to load test functional behavior and measure performance. It was originally designed for testing Web Applications but has since expanded to other test functions.} has been used for
 	this purpose. The \textbf{.jmx} testing project is available as a part of RESTful API's source code
 	\textbf{jmeter/admission\_tests.jmx}. It contains \uv{profiles} for various test cases, which can be enabled or
 	disabled by selecting desired user variables set via JMeter GUI.
@@ -191,20 +185,21 @@
 	\subsection{Performance Testing}
 	
 	\ref{itm:NF07}~NF07 talks about number of total and concurrent users that RESTful API should be able to handle. To
-	verify such requirement, performance test is a right thing to be used.
+	verify this requirement I ran a simple performance test.
 	
-	Performance test should, exactly as Verification or Regression tests, probe the application in an environment similar
-	to production.
-	It strictly focuses on application that the test scope is about. This means, there should be no delays due to backend
-	communication, e-mail sending or similar action. The goal is to go through all the application layers from the top to
-	the bottom and back: request - processing - response.
+	Performance test should probe the application in an environment similar to production.
+	It strictly focuses on the application that the test scope is about. This means, there should be no delays due to
+	the backend communication, e-mail sending or similar action. The goal is to go through all the application layers from
+	the top to the bottom and back: request - processing - response. It can also be used to find memory leaks in the
+	application, but this is out of scope of my work.
 	
-	Luckily, this is exactly what my regression test suite does. An exception might be a fact that
-	\verb|Rainy day|\footnote{Non standard sequence of actions. Errors, exceptions, and less typical usage paths}
-	scenarios are left out from performance test suite. Simply because they usually do not use all application layers and the request is usually refused during validation. This would give me distorted results and also would make error rate
-	detection difficult under high load.
+	Load testing pack of my JMeter test suite was created specifically for this task. A fact is
+	that \verb|Rainy day|\footnote{Non standard sequence of actions. Errors, exceptions, and less typical usage paths}
+	scenarios are left out from Load testing pack, which makes it different from the Regression pack. Simply because they
+	usually do not use all application layers and the request is usually refused during validation. This would give me
+	distorted results and also would make error rate detection difficult under high load.
 	
-	Basically, performance test suite is a subset of regression test pack, where only positive
+	In other words, the Load testing pack is a subset of Regression test pack, where only positive
 	\verb|Sunny day|\footnote{The typical sequence of actions and system responses} scenarios are included.
 	
 	RESTful API should be performance tested in three scenarios:
@@ -228,9 +223,9 @@
 	Admissions import and Entrance exam scenarios have practically been tested during the development phase, when Web UI
 	and Android teams tested their applications against RESTful API. No issues have been discovered.
 	
-	More important is to test, if the application can handle number of concurrent users described in NF07. No server errors
-	should appear in logs and because performance test \textbf{.jmx} suite contains Sunny day scenarios only, no business
-	errors should appear either. Well this is not completely true. Because there is only a single User Identity used for
+	More important is to test, whether the application can handle number of concurrent users described in NF07. No server
+	errors should appear in logs and because performance test \textbf{.jmx} suite contains Sunny day scenarios only, no business
+	errors should appear either. This is not completely true. Because there is only a single User Identity used for
 	all operations, concurrent access will mess up session removal. For this and only this single case 401 and 404 HTTP
 	error responses are not considered to be an error.
 	
@@ -238,19 +233,59 @@
 	
 	\subsubsection{Infrastructure}
 	
-	When load testing an application a separate environment should be set up for application being tested and load
-	injecting application. Luckily \gls{FIT} has good and quite powerful infrastructure available, and so RESTful API runs
-	on its own virtual machine, which provides:
+	When load testing an application a separate environment should be set up for both, the application being tested and
+	the load injecting application. Luckily \gls{FIT} provides quite powerful infrastructure, and so RESTful
+	API runs on its own virtual machine, which contains:
 	
-	% TODO
 	\begin{itemize}
 		\item AMD quad core CPU @ 2.0GHz
 		\item 6GB RAM
 	\end{itemize}
 	
+	This configuration should be sufficient. For production use it should, however, be duplicated and load balanced.
+	
 	\subsubsection{Scenarios and results}
 	
-	% TODO
+	For quick performance evaluation I decided to create statistics of all calls from RESTful API logs found on shared
+	virtual server. These were collected for several days.
+	This is what I declared to be a casual use. Load test is then set up to simulate behavior of Web UI and Android teams
+	during their development.
+	
+	Load test was then performed in two phases:
+	
+	\begin{itemize}
+		\item 50\% load, i.e. 125 concurrent threads ($\approx$ users)
+		\item 100\% load, i.e. 250 concurrent threads ($\approx$ users)  
+	\end{itemize}
+	
+	\begin{table}[h]\centering
+	 	\begin{minipage}{12.9cm}
+		\begin{tabular}{l|r|p{5.7cm}}
+		\hline
+		Identifier & Ratio & Description\\
+		\hline
+		throughput.viewproperties &	5 & Static page, lists all server properties \\
+		throughput.admissions & 20 & Retrieve list of admissions, paginated \\
+		throughput.admission.crud & 5 & Admission CRUD scenario \\
+		throughput.user.userIdentity & 60 & Obtain all user information (session, roles, \ldots) \\
+		throughput.programs & 20 & Retrieve list of programs, paginated \\
+		throughput.programme.crud & 10 & Programme CRUD scenario \\
+		throughput.terms & 20 & Retrieve list of terms \\
+		throughput.term.crud & 10 & Term CRUD scenario \\
+		\end{tabular}
+	    \renewcommand{\footnoterule}{}
+	    \end{minipage}
+	\caption{Load distribution among calls}
+	\label{load_distribution}
+	\end{table}
+	
+	Tests were run for approximately 15 minutes in each setup. During the test I found out, that the most resource
+	consuming operation is the import of a new Admission. This implies creating all its child entities or assigning the
+	existing ones (RESTful API does not create duplicates for entities, that can be shared, e.g. Country, City, \ldots).
+	Out of the interest I did one Load test round without Admission import. This implies more GET than PUT or POST
+	operations.
+	
+	Detailed result analysis can be found in Appendix~\ref{app:performance}.
 	
 	\subsection{User Acceptance Testing}
 	

@@ -201,7 +201,7 @@
 
 		\vspace{1cm}
 
-		\today
+		28 June 2012
 	\end{titlingpage}
 }
 
@@ -303,7 +303,7 @@
 
 		\noindent
 			\if@cityfordeclarationdefined
-				\thecityfordeclaration{} dne \today \hfill \dots\dots\dots\dots\dots\dots\dots
+				\thecityfordeclaration{} dne 28 June 2012 \hfill \dots\dots\dots\dots\dots\dots\dots
 			\else
 				\ClassError{FITthesis}{M{\' i}sto prohl{\' a}{\v s}en{\' i} nebylo zad{\' a}no}{Nastavte m{\' i}sto, kde bylo podeps{\' a}no prohl{\' a}{\v s}en{\' i}, v{\v c}etn{\v e} p{\v r}edlo{\v z}ky (nap{\v r}. V Praze) pomoc{\' i} p{\v r}{\' i}kazu \placeForDeclaration.}
 			\fi
@@ -319,7 +319,7 @@
 
 		\noindent
 			\if@cityfordeclarationdefined
-				In \thecityfordeclaration{} \today \hfill \dots\dots\dots\dots\dots\dots\dots
+				In \thecityfordeclaration{} 28 June 2012 \hfill \dots\dots\dots\dots\dots\dots\dots
 			\else
 				\ClassError{FITthesis}{Place of declaration unspecified}{Set the place where the declaration has been signed (e.g. Prague) using the \placeForDeclarationOfAuthenticity command.}
 			\fi
