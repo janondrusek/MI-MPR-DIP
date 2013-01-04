@@ -1,0 +1,6 @@
+#!/bin/bash
+pdflatex DP_Ondrusek_Jan_2012
+bibtex DP_Ondrusek_Jan_2012
+makeglossaries DP_Ondrusek_Jan_2012
+pdflatex DP_Ondrusek_Jan_2012
+pdflatex DP_Ondrusek_Jan_2012
