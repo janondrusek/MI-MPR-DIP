@@ -1,2 +1,96 @@
 \chapter{Build and Deploy}\label{app:deploy}
 
+	One benefit of using open source software and projects is, that one can benefit from continuous development of community
+	and modern trends without any need to write extensive amount of code. Man just has to keep up and follow, what is
+	happening and what is new.
+	
+	I consider Maven to be one of the best things that could ever happen to the Java development. A few years ago, when I
+	was writing my bachelor's thesis, I remember setting up set of nested Ant \textit{build.xml} files, tons of properties
+	and each modification took hours of studying the custom build process. Maven on the other hand follows the `convention
+	instead of configuration` approach. This means, if not explicitly specified, all Maven based projects keep the same
+	structure and share the same lifecycle, where build phases follow:
+
+	\begin{itemize}
+		\item \textbf{validate} the project is correct and all necessary information is available
+		\item \textbf{compile} the source code of the project
+		\item \textbf{test} the compiled source code using a suitable unit testing framework. These tests should not require
+		the code be packaged or deployed 
+		\item \textbf{package} takes the compiled code and packages it in its distributable format, such as a JAR, WAR, EAR
+		\item \textbf{integration-test} - process and deploy the package if necessary into an environment where integration
+		tests can be run
+		\item \textbf{verify} - run any checks to verify the package is valid and meets quality criteria
+		\item \textbf{install} - install the package into the local repository, for use as a dependency in other projects
+		locally
+		\item \textbf{deploy} - done in an integration or release environment, copies the final package to the remote
+		repository for sharing with other developers and projects.
+	\end{itemize}
+	
+	\section{Web application}
+	
+	RESTful API requires environment set up according to \ref{cha:implementation:platform}. Then follow
+	database~installation~\ref{app:deploy:database}. After that, \textit{parent} and \textit{test-templates} need to be
+	installed in a local Maven repository. To do so, checkout the two from my~GitHub~repositories~\cite{github} or use
+	snapshots from the~attached~CD~\ref{app:CDcontent}:
+	
+	\begin{verbatim}
+		parent > mvn install
+		test-templates > mvn install
+	\end{verbatim}
+
+	When RESTful API is checkout fresh from its repository, then nothing should stop the packaging process:
+
+	\begin{verbatim}
+		MI-MPR-DIP > mvn package
+	\end{verbatim}
+	
+	To make sure  nothing is left from some older build:
+	
+	\begin{verbatim}
+		MI-MPR-DIP > mvn clean package
+	\end{verbatim}
+	
+	This will compile all sources, execute both unit and integration tests and create deployable WAR package. This can be
+	found in \textbf{target/admission.war}. This file can be deployed in any servlet container, such as Jetty or Tomcat.
+	Application server is not required.
+	
+	RESTful API is also configured for simple deployment to Tomcat 7 container. In the \textbf{pom.xml} file, several
+	properties should be edited:
+
+	\lstset{language=XML}
+	\begin{lstlisting}[tabsize=2]
+	<maven.tomcat7.url>
+		http://tomcat7-host:port/manager/html
+	</maven.tomcat7.url>
+	<maven.tomcat7.username>USERNAME</maven.tomcat7.username>
+	<maven.tomcat7.password>PASSWORD</maven.tomcat7.password>
+	\end{lstlisting}
+
+	Now Maven is ready to deploy RESTful API into Tomcat 7:
+
+	\begin{verbatim}
+		MI-MPR-DIP > mvn clean package tomcat7:deploy
+	\end{verbatim}
+	
+	\section{Database}\label{app:deploy:database}
+	
+	Because no application logic is written using SQL, i.e. no stored procedures nor triggers, database machine can be as
+	simple and resource saving as possible. MySQL with InnoDB engine suits well.
+
+	RESTful API source code is shipped with \textbf{.sql} schema installation file. This can be found in
+	\textbf{src/main/resources/META-INF/sql/admission.sql}. Installation in MySQL follows:
+	
+	\begin{verbatim}
+		~ > mysql
+		mysql > create database admission character set utf8 collate utf8_bin;
+		mysql > quit
+		~ > mysql admission < src/main/resources/META-INF/sql/admission.sql 
+	\end{verbatim}
+
+	The last step is to point the RESTful API to the MySQL server. This is done via \textbf{.property} file, which can be
+	found in \textbf{src/main/resources/META-INF/deployment.properties}. Concrete keys are:
+	
+	\begin{verbatim}
+		database.url=jdbc:mysql://mysql-host:port/admission
+		database.username=USERNAME
+		database.password=PASSWORD
+	\end{verbatim}
