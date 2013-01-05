@@ -285,7 +285,20 @@
 	Out of the interest I did one Load test round without Admission import. This implies more GET than PUT or POST
 	operations.
 	
-	Detailed result analysis can be found in Appendix~\ref{app:performance}.
+	Detailed result analysis can be found in Appendix~\ref{app:performance}. They prove that RESTful API is capable of
+	handling the request amount of concurrent users. Error ratio is zero, which means that all requests have been
+	successfully processed. Although it lacks responsibility a bit. This leaves space for further optimisation. Places
+	worth to look at involve:
+	
+	\begin{itemize}
+		\item JPA and Hibernate tuning
+		\item Second level database cache for entities
+		\item MySQL, JVM, Tomcat and virtual machine tuning
+		\item Multiple Tomcat nodes with load balancing 
+	\end{itemize}
+	
+	This list is not even half complete, but may be considered as a hint at the beginning. Each of the items listed above
+	can possibly lead to new discoveries and possible enhancements.
 	
 	\subsection{User Acceptance Testing}
 	

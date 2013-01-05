@@ -3,7 +3,7 @@
 	Purpose of this chapter is to summarize everything that has been done in a manner of this master's thesis and to
 	describe results of RESTful API team's work.
 	
-	Results are evaluated against primary tasks and Catalogue of requirements~\ref{sec:catalogue}.
+	Results are evaluated against primary tasks and Catalogue~of~requirements~\ref{sec:catalogue}.
 	
 	\section{RESTful API and its application}
 	
@@ -12,12 +12,55 @@
 	Positive result is that all points of Functional requirements are fulfilled.
 	
 	What I was unable to achieve is to implement Admission filters. Lower priority of this special requirement by Web UI
-	team caused its last position in implementation plan, which unfortunately was not completely finished. This however has
-	no critical impact on RESTful API's functionality.
-	
-	% TODO
+	team caused its last place in the implementation plan, which unfortunately was not completely finished. This however
+	has no critical impact on RESTful API's functionality.
+		
 	\section{jBPM}
 	
+	The \gls{BPM} part of this project was something very new to me and I had to dive into business processes in general
+	first. jBPM as a processing machine was studied afterwards. It indeed is a technology, which is worth working with
+	and it found its use case in RESTful API application. I will consider jBPM in my further projects, where it may be
+	helpful, as well.
+	
+	We managed to create business processes for all the Conditions for admission and Dean's directive for admission
+	process. Although they work very well when tested isolated, due to lack of time we did not manage to hook BPM processes
+	with RESTful API's service layers. They both work with the same database and data, unfortunately do not play well
+	together yet.
+	
 	\section{Open questions}
+	
+	What shall be done with jBPM part? If RESTful API should be deployed into production, code change and some development
+	is required. This should be a simple task, because both API and jBPM work correctly when isolated.
+	
+	If Conditions for admission or Dean's directive change, how does it effect BPM models? It is quite simple to perform
+	model changes using GUI tools. They however have to be deployed into RESTful API. Currently BPM models are stored as
+	plain files. An enhancement would be to store them encoded in the database and swap them via some simple GUI, e.g.
+	custom web application.
 
 	\section{Lessons learned}
+
+	Each project of such scale should teach all involved people a lesson and all of them should gain valuable experience.
+	RESTful API is not an exception.
+	
+	The main problem was time and underestimating of the whole project. It turns out, that the required amount of time was
+	120 man days for two skilled developers. This is three months in two people working on the project full time!
+	
+	Another problem was lack of experience in selected technologies. None of the two working on RESTful API was experienced
+	in BPM and jBPM, and David was lacking Java, Spring and JPA skills as well. This, of course, slowed down the
+	development.
+	
+	Assigning one more person to a project of such scale should be considered next time.
+
+	\section{Contribution to the community}
+	
+	During the development of RESTful API and possibly some other school projects, I discovered, that all of my Maven based
+	applications share lots of common dependencies, plugins and settings. This is why I stared a tiny project simply called
+	\textit{parent}. It contains lots of version properties and common settings. Can be simply used as a Maven project
+	parent.
+	
+	Another one is a tiny set of JUnit and EasyMock testing templates. One has to follow a pattern, where a single class is
+	tested and all of its dependencies can be injected and are mocked. This is practically what a developer has to do
+	manually for each test class. My project called \textit{test-templates} does this automatically just by using
+	annotations. This saves lots of typing.
+	
+	Both projects can be found on my~GitHub~\cite{github} and are public.
