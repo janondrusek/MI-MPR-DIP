@@ -52,13 +52,13 @@
 		cycles
 	\end{itemize}
 	
-	Personally I adapted to work like this very quickly. It however has a drawback. One usually has to write 2 and more
-	times more code than he would without testing. Each refactoring, that does not involve method renaming and extraction
-	only, requires even more effort to update unit tests. This is why I used this approach only to test it within RESTful
-	API, when developing import of admissions.
+	Personally, I adapted to work like this very quickly. It, however, has a drawback. One usually has to write two and
+	more times more code than he would without testing. Each refactoring, that does not involve method renaming and
+	extraction only, requires even more effort to update unit tests. This is why I used this approach only to test it
+	within RESTful API, when developing import of admissions.
 	
-	Due to lack of time I continued without implementing unit tests any further. On the other hand, I encourage everyone to
-	adopt this technique as it adds much more confidence and trust in developer's work.
+	Due to lack of time, I continued without implementing unit tests any further. On the other hand, I encourage everyone
+	to adopt this technique, as it adds much more confidence and trust in developer's work.
 
 	Frameworks that help to make unit testing a joy are e.g. JUnit and TestNG.
 	
@@ -66,7 +66,7 @@
 	also available as Maven report plugins, are Cobertura, JaCoCo (continuation of EMMA as a forked project) or JMockit
 	code coverage.
 	If one is willing to pay for a commercial solution, Clover may be worth looking. These metrics should become a standard, when developing an important
-	project. Therefore they should be set to 100\% code coverage by unit tests, both line and branch.
+	project. Therefore, they should be set to 100\% code coverage by unit tests, both line and branch.
 	
 	Another very helpful tool and Maven plugin is Findbugs. It compares the source code with a database of known best
 	practices and warns the developer, if there are some places that need fixing or attention.
@@ -155,7 +155,7 @@
 	party's application. This can influence two sides of the application. Input (North) or Backend interaction (South) or
 	both.
 	
-	What does this mean for RESTful API? Because it is directly consumed by clients I do not need to care about the
+	What does this mean for RESTful API? Because it is directly consumed by clients, I do not need to care about the
 	Northern part. Tests will just act like clients. More interesting is the Southern part. RESTful API communicates with
 	Faculty's LDAP server and mail server. During Verification or Regression testing none of them should be contacted.
 	
@@ -308,7 +308,7 @@
 	The only difference when compared to real production use is that non-production data should be provided as an input
 	during the test. Typically test users and some randomly generated data.
 	
-	For such scenario a small subset of Regression test pack can be selected, built on top of Sunny day scenarios.
+	For such scenario, a small subset of Regression test pack can be selected, built on top of Sunny day scenarios.
 	UAT should run very quickly. A common approach for RESTful API might be that each endpoint is hit with a single Sunny
 	day request. Regression Test pack could be reused again or a quick automatic or manual test via Web UI is applicable
 	too.
